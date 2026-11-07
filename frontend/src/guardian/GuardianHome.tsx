@@ -47,7 +47,7 @@ export function GuardianHome() {
       <header className="hero flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
           <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-8 w-8" />
-          <span className="font-display text-xl font-extrabold tracking-wide uppercase">
+          <span className="brandmark text-xl">
             PathToPro <span className="text-pitch-300">· Family</span>
           </span>
         </div>
@@ -241,13 +241,13 @@ function ScheduleCard({ childId }: { childId: string }) {
     <Card>
       <SectionTitle
         action={
-          <div className="bg-surface-2 flex rounded-xl p-1 text-sm font-semibold" role="group" aria-label="Week">
+          <div className="bg-surface-2 flex rounded-md p-1 text-sm font-semibold" role="group" aria-label="Week">
             {["This week", "Next week"].map((label, i) => (
               <button
                 key={label}
                 onClick={() => setWeek(i)}
                 aria-pressed={week === i}
-                className={cn("rounded-lg px-3 py-1.5 transition", week === i ? "bg-pitch-600 text-white" : "text-ink-2 hover:text-ink")}
+                className={cn("rounded-lg px-3 py-1.5 transition", week === i ? "bg-pitch-300 text-pitch-950" : "text-ink-2 hover:text-ink")}
               >
                 {label}
               </button>
@@ -266,7 +266,7 @@ function ScheduleCard({ childId }: { childId: string }) {
               key={d.date}
               title={d.match ? `Match vs ${d.match.opponent}, ${d.match.time}` : d.kind === "rest" ? "Rest day" : `${d.label}, ${d.minutes} min`}
               className={cn(
-                "flex min-h-24 flex-col items-center rounded-xl border px-0.5 py-2 text-center",
+                "flex min-h-24 flex-col items-center rounded-md border px-0.5 py-2 text-center",
                 d.match
                   ? "border-pitch-400/60 bg-pitch-500/20"
                   : d.kind === "rest"
@@ -276,7 +276,7 @@ function ScheduleCard({ childId }: { childId: string }) {
                 past && "opacity-55",
               )}
             >
-              <span className="text-ink-2 text-[11px] font-bold uppercase">{fmtDay(d.date)}</span>
+              <span className="text-ink-2 text-[11px] font-bold">{fmtDay(d.date)}</span>
               <span className="text-lg leading-tight font-extrabold">{fmtDay(d.date, { day: "numeric" })}</span>
               <span className={cn("mt-auto text-[11px] leading-tight font-semibold sm:text-xs", d.kind === "rest" ? "text-ink-2" : "text-ink")}>
                 {SHORT[d.kind] ?? d.label}

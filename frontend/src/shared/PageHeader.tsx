@@ -33,9 +33,9 @@ export function PageHeader({
         <div className="flex min-w-0 items-center gap-4">
           {leading}
           <div className="min-w-0">
-            {eyebrow && <p className="text-pitch-300 text-xs font-bold tracking-[0.14em] uppercase">{eyebrow}</p>}
-            <h1 className="font-display text-[1.75rem] leading-none font-extrabold tracking-tight uppercase md:text-[2.6rem]">{title}</h1>
-            {subtitle && <div className="mt-1.5 max-w-3xl text-[13px] text-white/75 md:text-sm">{subtitle}</div>}
+            {eyebrow && <p className="text-sm font-bold">{eyebrow}</p>}
+            <h1 className="font-display text-[1.9rem] leading-none font-black md:text-[2.8rem]">{title}</h1>
+            {subtitle && <div className="mt-1.5 max-w-3xl text-sm text-white md:text-[15px]">{subtitle}</div>}
           </div>
         </div>
         {actions && <div className="hero-actions flex flex-wrap items-center gap-2">{actions}</div>}
@@ -71,9 +71,9 @@ export function Tabs<K extends string>({
             tone === "hero"
               ? value === key
                 ? "border-pitch-300 text-white"
-                : "border-transparent text-white/65 hover:text-white"
+                : "border-transparent text-white hover:border-white/50"
               : value === key
-                ? "border-pitch-600 text-ink"
+                ? "border-pitch-300 text-ink"
                 : "text-ink-2 hover:text-ink border-transparent",
           )}
         >

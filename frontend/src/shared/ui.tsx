@@ -11,11 +11,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 const button = cva(
-  "tap inline-flex items-center justify-center gap-2 rounded-xl px-4 text-[15px] font-semibold transition-colors disabled:opacity-50 disabled:pointer-events-none",
+  "tap inline-flex items-center justify-center gap-2 rounded-md px-4 text-[15.5px] font-bold transition-colors disabled:opacity-50 disabled:pointer-events-none",
   {
     variants: {
       variant: {
-        primary: "bg-pitch-600 text-white hover:bg-pitch-700",
+        primary: "bg-pitch-300 text-pitch-950 hover:bg-pitch-200",
         secondary: "bg-surface border border-line text-ink hover:bg-surface-2",
         ghost: "text-ink-2 hover:bg-surface-2",
         danger: "bg-danger text-white hover:brightness-95",
@@ -38,16 +38,13 @@ export const Button = forwardRef<
 Button.displayName = "Button";
 
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("bg-surface rounded-2xl border border-line p-4 shadow-sm", className)} {...props} />;
+  return <div className={cn("bg-surface rounded-[10px] border border-line p-4", className)} {...props} />;
 }
 
 export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
     <div className="mb-2 flex items-center justify-between">
-      <h2 className="font-display text-ink flex items-center gap-2 text-lg font-bold tracking-wide uppercase">
-        <span className="bg-pitch-500 h-4 w-1 rounded-full" aria-hidden />
-        {children}
-      </h2>
+      <h2 className="font-display text-ink text-xl leading-tight font-extrabold">{children}</h2>
       {action}
     </div>
   );
@@ -57,13 +54,13 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
 export function Chip({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | Band | "win" }) {
   const tones = {
     neutral: "bg-surface-2 text-ink border-line",
-    green: "bg-ready/10 text-ready border-ready/30",
-    amber: "bg-caution/10 text-amber-700 dark:text-caution border-caution/40",
-    red: "bg-recover/10 text-recover border-recover/40",
-    win: "bg-win/10 text-win border-win/30",
+    green: "bg-ready/15 text-[#a9d0ff] border-ready/50",
+    amber: "bg-caution/15 text-amber-800 dark:text-caution border-caution/50",
+    red: "bg-recover/15 text-orange-800 dark:text-[#ffb78a] border-recover/50",
+    win: "bg-win/15 text-green-800 dark:text-win border-win/40",
   };
   return (
-    <span className={cn("inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold", tones[tone])}>
+    <span className={cn("inline-flex items-center rounded-md border px-2.5 py-1 text-[13px] font-semibold", tones[tone])}>
       {children}
     </span>
   );
@@ -100,7 +97,7 @@ export function BandIcon({ band, className }: { band: Band | null; className?: s
 export function BandBadge({ band, score }: { band: Band | null; score?: number | null }) {
   if (!band) return <Chip>No data</Chip>;
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold text-white", BAND_BG[band])}>
+    <span className={cn("text-pitch-950 inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-extrabold", BAND_BG[band])}>
       <BandIcon band={band} className="h-3.5 w-3.5" />
       {score != null ? Math.round(score) : BAND_TEXT[band]}
     </span>
@@ -110,12 +107,12 @@ export function BandBadge({ band, score }: { band: Band | null; score?: number |
 // Session intensity colour scale (lanes on the week pitch, strips in the inbox)
 export function intensityClass(kind: SessionKind, rpe: number): string {
   // On the dark navy the scale runs the other way: easy is a faint tint, hard the brightest
-  if (kind === "match") return "bg-pitch-900 text-white dark:bg-pitch-950 dark:ring-1 dark:ring-inset dark:ring-pitch-300/70";
+  if (kind === "match") return "bg-pitch-900 text-white dark:bg-pitch-950 dark:ring-2 dark:ring-inset dark:ring-pitch-300";
   if (kind === "rest") return "bg-surface-2 text-ink-2";
   if (rpe <= 3) return "bg-pitch-200 text-pitch-900 dark:bg-pitch-500/20 dark:text-pitch-100";
   if (rpe <= 5) return "bg-pitch-400 text-pitch-950 dark:bg-pitch-500/45 dark:text-white";
-  if (rpe <= 7) return "bg-pitch-600 text-white";
-  return "bg-pitch-800 text-white dark:bg-pitch-400 dark:text-pitch-950";
+  if (rpe <= 7) return "bg-pitch-500 text-pitch-950";
+  return "bg-pitch-800 text-white dark:bg-pitch-300 dark:text-pitch-950";
 }
 
 export function Spinner({ label = "Loading" }: { label?: string }) {
@@ -135,13 +132,13 @@ export function Skeleton({ className }: { className?: string }) {
 export function PageSkeleton({ label = "Loading" }: { label?: string }) {
   return (
     <div role="status" aria-label={label} className="space-y-4">
-      <Skeleton className="h-28 rounded-2xl" />
+      <Skeleton className="h-28 rounded-[10px]" />
       <div className="grid gap-4 md:grid-cols-3">
         <Skeleton className="h-24" />
         <Skeleton className="h-24" />
         <Skeleton className="h-24" />
       </div>
-      <Skeleton className="h-64 rounded-2xl" />
+      <Skeleton className="h-64 rounded-[10px]" />
       <span className="sr-only">{label}…</span>
     </div>
   );
@@ -153,7 +150,7 @@ export function StatTile({ label, value, sub, accent, className }: { label: Reac
     <Card className={cn("relative overflow-hidden p-3", className)}>
       {accent && <span className="absolute inset-y-0 left-0 w-1" style={{ background: accent }} aria-hidden />}
       <p className="text-ink-2 text-xs leading-tight font-semibold">{label}</p>
-      <p className="font-display num mt-1 text-[1.9rem] leading-none font-bold">{value}</p>
+      <p className="font-display num mt-1 text-[1.95rem] leading-none font-extrabold">{value}</p>
       {sub && <p className="text-ink-2 mt-1 text-xs">{sub}</p>}
     </Card>
   );

@@ -29,7 +29,7 @@ export function GymProgrammeView({ p, compact = false }: { p: GymProgramme; comp
       {p.adjustments.length > 0 && (
         <ul className="space-y-1">
           {p.adjustments.map((a) => (
-            <li key={a} className="border-caution/40 bg-caution/10 flex gap-2 rounded-xl border p-2 text-sm">
+            <li key={a} className="border-caution/40 bg-caution/10 flex gap-2 rounded-md border p-2 text-sm">
               <ShieldCheck className="text-caution h-4 w-4 shrink-0" aria-hidden />
               {a}
             </li>
@@ -45,7 +45,7 @@ export function GymProgrammeView({ p, compact = false }: { p: GymProgramme; comp
               {b.title}
               <span className="text-ink-2 text-xs font-medium">{b.tag === "position" ? `· ${p.position_label}` : "· everyone"}</span>
             </h3>
-            <div className="border-line divide-[color:var(--line)] divide-y rounded-xl border">
+            <div className="border-line divide-[color:var(--line)] divide-y rounded-md border">
               {b.items.map((it) => (
                 <ExerciseRow key={it.id} it={it} compact={compact} />
               ))}

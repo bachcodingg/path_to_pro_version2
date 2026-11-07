@@ -166,7 +166,7 @@ function Calendar({ hasFeed, onNote }: { hasFeed: boolean; onNote: Note }) {
         <div className="space-y-2">
           <input className={input} readOnly value={feed.url} aria-label="Calendar address" onFocus={(e) => e.target.select()} />
           <div className="flex flex-wrap gap-2">
-            <a className="bg-pitch-600 hover:bg-pitch-700 tap inline-flex h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-white" href={feed.webcal}>
+            <a className="bg-pitch-600 hover:bg-pitch-700 tap inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-semibold text-white" href={feed.webcal}>
               <CalendarPlus className="h-4 w-4" aria-hidden /> Add to my calendar
             </a>
             <Button
@@ -284,7 +284,7 @@ export function TwoStep({ onNote }: { onNote: Note }) {
             </a>
             , or type this key:
           </p>
-          <p className="bg-surface-2 rounded-lg p-3 text-center font-mono tracking-wider break-all">{setup.secret.match(/.{1,4}/g)?.join(" ")}</p>
+          <p className="bg-surface-2 rounded-lg p-3 text-center font-mono break-all">{setup.secret.match(/.{1,4}/g)?.join(" ")}</p>
           <Field label="2. Enter the 6-digit code it shows">
             <input className={input} inputMode="numeric" autoComplete="one-time-code" required minLength={6} maxLength={7} value={code} onChange={(e) => setCode(e.target.value)} />
           </Field>

@@ -22,7 +22,7 @@ const LEVELS = [
   [3, "Competitive amateur: I start in a competitive league"],
   [4, "Elite amateur: regional or select team"],
 ];
-export const input = "bg-surface-2 border-line text-ink mt-1 h-12 w-full rounded-xl border px-3 text-base";
+export const input = "bg-surface-2 border-line text-ink mt-1 h-12 w-full rounded-md border px-3 text-base";
 
 // Also the frame of the password, verification and account pages (AuthPages.tsx)
 export function Shell({ title, subtitle, children, footer }: { title: string; subtitle: string; children: ReactNode; footer?: ReactNode }) {
@@ -31,7 +31,7 @@ export function Shell({ title, subtitle, children, footer }: { title: string; su
       <div className="w-full max-w-md py-6">
         <div className="mb-5 text-center text-white">
           <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="mx-auto mb-3 h-12 w-12" />
-          <h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>
+          <h1 className="text-2xl font-extrabold">{title}</h1>
           <p className="text-pitch-200 mt-1">{subtitle}</p>
         </div>
         <Card>{children}</Card>
@@ -113,7 +113,7 @@ export function Register() {
     return (
       <Shell title="Almost there" subtitle="One more step for players under 16">
         <p>Give this code to a parent. They sign up at the link below and agree to what we store about you.</p>
-        <p className="my-4 text-center font-mono text-3xl font-extrabold tracking-widest" aria-label="Parent invite code">
+        <p className="my-4 text-center font-mono text-3xl font-extrabold" aria-label="Parent invite code">
           {invite}
         </p>
         <p className="text-ink-2 mb-4 text-sm break-all">{window.location.origin + import.meta.env.BASE_URL}register/guardian</p>
@@ -127,7 +127,7 @@ export function Register() {
   return (
     <Shell title="Join PathToPro" subtitle="A plan to reach your next level. Free, for players 13+.">
       {DEMO && (
-        <p className="border-caution/50 bg-caution/10 mb-3 rounded-xl border p-3 text-sm">
+        <p className="border-caution/50 bg-caution/10 mb-3 rounded-md border p-3 text-sm">
           This is the offline demo: sign-up needs the live server. Try the demo account "Self-guided player" on the sign-in page.
         </p>
       )}
@@ -187,7 +187,7 @@ export function Register() {
                   key={d}
                   aria-pressed={on}
                   onClick={() => set("team_days", on ? f.team_days.filter((x) => x !== i) : [...f.team_days, i])}
-                  className={cn("tap h-11 w-11 rounded-xl border text-sm font-bold", on ? "bg-pitch-600 border-pitch-600 text-white" : "border-line")}
+                  className={cn("tap h-11 w-11 rounded-md border text-sm font-bold", on ? "bg-pitch-300 border-pitch-300 text-pitch-950" : "border-line")}
                 >
                   {d}
                 </button>
@@ -273,7 +273,7 @@ export function RegisterGuardian() {
     <Shell title="Parent sign-up" subtitle="Link to your child's account with their code">
       <form onSubmit={submit} className="space-y-3">
         <Field label="Invite code">
-          <input className={cn(input, "font-mono tracking-widest uppercase")} required minLength={6} maxLength={20} value={code} onChange={(e) => setCode(e.target.value)} />
+          <input className={cn(input, "font-mono")} required minLength={6} maxLength={20} value={code} onChange={(e) => setCode(e.target.value)} />
         </Field>
         <Field label="Your name">
           <input className={input} required minLength={2} maxLength={60} value={name} onChange={(e) => setName(e.target.value)} />

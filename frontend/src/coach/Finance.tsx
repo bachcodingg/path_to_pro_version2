@@ -224,7 +224,7 @@ function Kpi({ label, value, sub, tone, accent }: { label: string; value: string
   return (
     <Card className="relative overflow-hidden">
       {accent && <span className="absolute inset-y-0 left-0 w-1" style={{ background: accent }} aria-hidden />}
-      <p className="text-ink-2 text-xs font-semibold uppercase">{label}</p>
+      <p className="text-ink-2 text-xs font-semibold">{label}</p>
       <p className={cn("font-display mt-1 text-[2rem] leading-none font-bold tabular-nums", tone)}>{value}</p>
       {sub && <p className="text-ink-2 mt-1 text-xs">{sub}</p>}
     </Card>

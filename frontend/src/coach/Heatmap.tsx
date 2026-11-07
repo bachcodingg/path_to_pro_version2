@@ -11,14 +11,14 @@ import { BAND_BG, BAND_MIN, BAND_TEXT, BandBadge, BandIcon, Card, ErrorNote, HOL
 // Past days are quiet tints so the history reads as context; today's column is solid, so the
 // eye lands on who needs the coach now
 const PAST: Record<Band, string> = {
-  green: "bg-ready/10 text-blue-800 dark:bg-ready/20 dark:text-blue-200",
-  amber: "bg-caution/20 text-amber-900 dark:text-caution",
-  red: "bg-recover/40 text-orange-950 dark:bg-recover/50 dark:text-white",
+  green: "bg-ready/10 text-blue-800 dark:bg-ready/28 dark:text-blue-100",
+  amber: "bg-caution/20 text-amber-900 dark:bg-caution/18 dark:text-caution",
+  red: "bg-recover/40 text-orange-950 dark:bg-recover dark:text-[#2a1200]",
 };
 const TODAY: Record<Band, string> = {
-  green: "bg-ready text-white",
+  green: "bg-ready text-pitch-950",
   amber: "bg-caution text-amber-950",
-  red: "bg-recover text-white",
+  red: "bg-recover text-pitch-950",
 };
 
 const RISK: Record<Band, number> = { red: 0, amber: 1, green: 2 };
@@ -69,24 +69,24 @@ export function Heatmap() {
               onClick={() => setMissingOnly(!missingOnly)}
               aria-pressed={missingOnly}
               className={cn(
-                "tap rounded-xl border px-3 text-sm font-semibold",
-                missingOnly ? "border-pitch-600 bg-pitch-600 text-white" : "border-line bg-surface hover:bg-surface-2",
+                "tap rounded-md border px-3 text-sm font-semibold",
+                missingOnly ? "border-pitch-300 bg-pitch-300 text-pitch-950" : "border-line bg-surface hover:bg-surface-2",
               )}
             >
               {missingOnly ? "Show everyone" : `${missing} not checked in today`}
             </button>
           )}
-          <select className="bg-surface border-line tap rounded-xl border px-3" value={sort} onChange={(e) => setSort(e.target.value as "risk" | "name")} aria-label="Sort">
+          <select className="bg-surface border-line tap rounded-md border px-3" value={sort} onChange={(e) => setSort(e.target.value as "risk" | "name")} aria-label="Sort">
             <option value="risk">Most at risk first</option>
             <option value="name">By name</option>
           </select>
-          <select className="bg-surface border-line tap rounded-xl border px-3" value={group} onChange={(e) => setGroup(e.target.value)} aria-label="Age group">
+          <select className="bg-surface border-line tap rounded-md border px-3" value={group} onChange={(e) => setGroup(e.target.value)} aria-label="Age group">
             <option value="">All ages</option>
             {groups.map((g) => (
               <option key={g}>{g}</option>
             ))}
           </select>
-          <select className="bg-surface border-line tap rounded-xl border px-3" value={flag} onChange={(e) => setFlag(e.target.value)} aria-label="Flag">
+          <select className="bg-surface border-line tap rounded-md border px-3" value={flag} onChange={(e) => setFlag(e.target.value)} aria-label="Flag">
             <option value="">All players</option>
             <option value="phv_window">Growth zone</option>
             <option value="load_spike">Load spike</option>
@@ -101,9 +101,9 @@ export function Heatmap() {
             <tr>
               <th className="bg-surface sticky left-0 p-2 text-left">Player</th>
               {data.dates.map((d) => (
-                <th key={d} className={cn("p-1 text-center font-medium", d === data.today && "bg-pitch-50 text-pitch-700 font-bold dark:bg-white/5")}>
+                <th key={d} className={cn("p-1 text-center font-medium", d === data.today && "bg-pitch-50 text-pitch-300 font-bold dark:bg-white/5")}>
                   <div>{d === data.today ? "Today" : fmtDay(d)}</div>
-                  <div className={cn("text-xs", d === data.today ? "text-pitch-700" : "text-ink-2")}>{d.slice(8)}</div>
+                  <div className={cn("text-xs", d === data.today ? "text-pitch-300" : "text-ink-2")}>{d.slice(8)}</div>
                 </th>
               ))}
             </tr>
@@ -165,7 +165,7 @@ export function Heatmap() {
           <RateButtons playerId={sel.row.id} day={sel.row.cells[sel.i].date} />
           <div className="flex items-center gap-3">
             <BandBadge band={sel.row.cells[sel.i].band} score={sel.row.cells[sel.i].score} />
-            <Link to={`/coach/players/${sel.row.id}`} className="text-pitch-600 font-semibold hover:underline">
+            <Link to={`/coach/players/${sel.row.id}`} className="text-pitch-300 font-semibold hover:underline">
               Open scouting report →
             </Link>
           </div>
@@ -189,17 +189,17 @@ function SquadPulse({ rows, today }: { rows: HeatmapRow[]; today: string }) {
   return (
     <div className="pb-5">
       <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
-        <span className="text-xs font-bold tracking-[0.14em] text-white/60 uppercase" title="Each player's most recent check-in, today or earlier">
+        <span className="text-xs font-bold text-white/95" title="Each player's most recent check-in, today or earlier">
           Latest reading per player
         </span>
         {parts.map(([k, label, n]) => (
           <span key={k} className="flex items-center gap-1.5">
             <span className={cn("h-2.5 w-2.5 self-center rounded-full", BAND_BG[k])} aria-hidden />
             <span className="font-display text-2xl font-bold">{n}</span>
-            <span className="text-sm text-white/75">{label}</span>
+            <span className="text-sm text-white/95">{label}</span>
           </span>
         ))}
-        <span className="text-sm text-white/75 md:ml-auto">
+        <span className="text-sm text-white/95 md:ml-auto">
           <span className="font-display text-2xl font-bold text-white">{checkedIn}</span> of {rows.length} checked in today
         </span>
       </div>
@@ -257,7 +257,7 @@ function RateButtons({ playerId, day }: { playerId: string; day: string }) {
           key={b}
           onClick={() => rate(b)}
           aria-pressed={saved === b}
-          className={cn("tap inline-flex items-center gap-1 rounded-xl px-3 text-sm font-semibold text-white", BAND_BG[b], saved && saved !== b && "opacity-40")}
+          className={cn("tap inline-flex items-center gap-1 rounded-md px-3 text-sm font-semibold text-white", BAND_BG[b], saved && saved !== b && "opacity-40")}
         >
           <BandIcon band={b} className="h-4 w-4" /> {b === "green" ? "Ready" : b === "amber" ? "Take care" : "Recover"}
         </button>

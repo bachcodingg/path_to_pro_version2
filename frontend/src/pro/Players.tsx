@@ -96,7 +96,7 @@ export function Players({ teamId }: { teamId: string }) {
               key={k}
               aria-pressed={cat === k}
               onClick={() => setCat(k)}
-              className={cn("tap rounded-lg border border-line px-3 py-1.5 text-sm font-semibold", cat === k && "bg-pitch-700 text-white")}
+              className={cn("tap rounded-lg border border-line px-3 py-1.5 text-sm font-semibold", cat === k && "bg-pitch-300 text-pitch-950")}
             >
               {c.label}
             </button>
@@ -170,17 +170,17 @@ function Leaders({ players }: { players: PlayerRow[] }) {
         return (
           <Card key={k} className="overflow-hidden p-0">
             <div className="hero px-3 pt-2.5 pb-3">
-              <p className="text-pitch-300 text-[11px] font-bold tracking-[0.12em] uppercase">{label}</p>
+              <p className="text-pitch-300 text-[11px] font-bold">{label}</p>
               {first ? (
                 <div className="mt-1 flex items-end justify-between gap-2">
                   <span className="min-w-0">
                     <span className="block truncate font-bold">{first.name}</span>
-                    <span className="block truncate text-xs text-white/70">{first.position ?? ""}</span>
+                    <span className="block truncate text-xs text-white/95">{first.position ?? ""}</span>
                   </span>
                   <span className="font-display text-4xl leading-none font-bold">{fmt(first[k], kind)}</span>
                 </div>
               ) : (
-                <p className="mt-1 text-sm text-white/70">No one yet</p>
+                <p className="mt-1 text-sm text-white/95">No one yet</p>
               )}
             </div>
             <ol className="divide-y divide-[color:var(--line)] text-sm" start={2}>

@@ -42,7 +42,7 @@ export function Tips() {
       <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start lg:gap-6 lg:space-y-0">
         <section aria-label="Tip for today">
           <Card className="border-pitch-400 bg-pitch-900/40">
-            <p className="text-pitch-300 flex items-center gap-2 text-xs font-bold tracking-wider uppercase">
+            <p className="text-pitch-300 flex items-center gap-2 text-xs font-bold">
               <Lightbulb className="h-4 w-4" aria-hidden /> Tip for today · {data.today.reason}
             </p>
             <TipBody t={data.today} />
@@ -63,7 +63,7 @@ export function Tips() {
           {tab === "position" && (
             <label className="flex items-center gap-2 text-sm font-semibold">
               Position
-              <select className="bg-surface border-line h-11 flex-1 rounded-xl border px-3" value={shown} onChange={(e) => setPos(e.target.value)}>
+              <select className="bg-surface border-line h-11 flex-1 rounded-md border px-3" value={shown} onChange={(e) => setPos(e.target.value)}>
                 {data.positions.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.label}

@@ -61,7 +61,7 @@ export function Pathway() {
   return (
     <div className="space-y-5 pt-2">
       {levelled && (
-        <Card className="border-pitch-400 bg-pitch-700 flex items-center gap-3 text-white" role="status">
+        <Card className="border-pitch-300 bg-pitch-300 text-pitch-950 flex items-center gap-3" role="status">
           <PartyPopper className="h-8 w-8 shrink-0" aria-hidden />
           <div>
             <p className="text-lg font-extrabold">Level up! You're now {a.name}.</p>
@@ -75,11 +75,11 @@ export function Pathway() {
         <div className="space-y-5">
           <Card>
             <div className="flex items-center gap-3">
-              <div className="bg-pitch-600 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-2xl font-extrabold text-white">
+              <div className="bg-pitch-600 flex h-14 w-14 shrink-0 items-center justify-center rounded-[10px] text-2xl font-extrabold text-white">
                 {a.level}
               </div>
               <div>
-                <p className="text-ink-2 text-xs font-semibold uppercase">Level {a.level} of 5</p>
+                <p className="text-ink-2 text-xs font-semibold">Level {a.level} of 5</p>
                 <h1 className="text-xl font-extrabold">{a.name}</h1>
                 <p className="text-ink-2 text-sm">Goal: {data.profile.goal_label}</p>
               </div>
@@ -120,7 +120,7 @@ export function Pathway() {
                 <span className="font-semibold">{window.location.origin + import.meta.env.BASE_URL}register/guardian</span> with this
                 code:
               </p>
-              <p className="mt-2 font-mono text-2xl font-extrabold tracking-widest" aria-label="Parent invite code">
+              <p className="mt-2 font-mono text-2xl font-extrabold" aria-label="Parent invite code">
                 {data.guardian_invite}
               </p>
             </Card>
@@ -175,7 +175,7 @@ export function Pathway() {
                       value={value}
                       onChange={(e) => setValue(e.target.value)}
                       placeholder={`Result (${row.unit})`}
-                      className="bg-surface-2 border-line h-11 w-full rounded-xl border px-3"
+                      className="bg-surface-2 border-line h-11 w-full rounded-md border px-3"
                     />
                   </label>
                   <Button type="submit" loading={busy}>
@@ -228,7 +228,7 @@ export function Pathway() {
                       <button
                         key={d}
                         aria-pressed={on}
-                        className={cn("tap h-11 w-11 rounded-xl border text-sm font-bold", on ? "bg-pitch-600 border-pitch-600 text-white" : "border-line")}
+                        className={cn("tap h-11 w-11 rounded-md border text-sm font-bold", on ? "bg-pitch-300 border-pitch-300 text-pitch-950" : "border-line")}
                         onClick={() =>
                           save({ team_days: on ? data.profile.team_days.filter((x) => x !== i) : [...data.profile.team_days, i] })
                         }
@@ -242,7 +242,7 @@ export function Pathway() {
               <label className="block">
                 <span className="text-sm font-semibold">Match day</span>
                 <select
-                  className="bg-surface-2 border-line mt-1 h-11 w-full rounded-xl border px-3"
+                  className="bg-surface-2 border-line mt-1 h-11 w-full rounded-md border px-3"
                   value={data.profile.match_day ?? -1}
                   onChange={(e) => save({ match_day: Number(e.target.value) })}
                 >
@@ -257,7 +257,7 @@ export function Pathway() {
               <label className="block">
                 <span className="text-sm font-semibold">Equipment</span>
                 <select
-                  className="bg-surface-2 border-line mt-1 h-11 w-full rounded-xl border px-3"
+                  className="bg-surface-2 border-line mt-1 h-11 w-full rounded-md border px-3"
                   value={data.profile.equipment}
                   onChange={(e) => save({ equipment: e.target.value })}
                 >
@@ -269,7 +269,7 @@ export function Pathway() {
               <label className="block">
                 <span className="text-sm font-semibold">My goal</span>
                 <select
-                  className="bg-surface-2 border-line mt-1 h-11 w-full rounded-xl border px-3"
+                  className="bg-surface-2 border-line mt-1 h-11 w-full rounded-md border px-3"
                   value={data.profile.goal}
                   onChange={(e) => save({ goal: e.target.value })}
                 >

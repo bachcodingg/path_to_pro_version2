@@ -76,14 +76,14 @@ export function CoachLayout() {
           <div className="mb-5 flex items-center gap-2.5 px-2">
             <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-9 w-9" />
             <div className="leading-none">
-              <span className="font-display block text-xl font-extrabold tracking-wide uppercase">PathToPro</span>
-              <span className="text-pitch-300 text-[11px] font-semibold tracking-[0.12em] uppercase">Staff · U13-U18</span>
+              <span className="brandmark block text-xl">PathToPro</span>
+              <span className="text-pitch-300 mt-1 block text-[13px] font-semibold">Staff, U13 to U18</span>
             </div>
           </div>
           <nav aria-label="Staff navigation" className="no-scrollbar flex-1 space-y-4 overflow-y-auto">
             {GROUPS.filter((g) => g.items.length).map((g) => (
               <div key={g.group}>
-                <p className="mb-1 px-3 text-[11px] font-bold tracking-[0.14em] text-white/45 uppercase">{g.group}</p>
+                <p className="mb-1 px-3 text-[13px] font-bold text-white/70">{g.group}</p>
                 <div className="space-y-0.5">
                   {g.items.map(({ to, label, icon: Icon, end }) => (
                     <NavLink
@@ -92,10 +92,10 @@ export function CoachLayout() {
                       end={end}
                       className={({ isActive }) =>
                         cn(
-                          "tap relative flex items-center gap-3 rounded-lg px-3 py-2 text-[15px] font-semibold transition-colors",
+                          "tap relative flex items-center gap-3 rounded-md px-3 py-2 text-[15px] font-semibold transition-colors",
                           isActive
-                            ? "bg-white/12 text-white before:bg-pitch-300 before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-full"
-                            : "text-pitch-100/80 hover:bg-white/6 hover:text-white",
+                            ? "bg-pitch-300 text-pitch-950 font-bold"
+                            : "text-pitch-100 hover:bg-white/6 hover:text-white",
                         )
                       }
                     >
@@ -135,7 +135,7 @@ export function CoachLayout() {
           <div className="flex items-center justify-between px-4 pt-3">
             <span className="flex items-center gap-2 text-white">
               <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-7 w-7" />
-              <span className="font-display text-lg font-extrabold tracking-wide uppercase">PathToPro</span>
+              <span className="brandmark text-lg">PathToPro</span>
             </span>
             <span className="flex items-center gap-1">
               <Link to="/account" className="tap text-pitch-200 flex h-11 w-11 items-center justify-center" aria-label={t("nav.account")}>
@@ -153,7 +153,7 @@ export function CoachLayout() {
                 to={to}
                 end={end}
                 className={({ isActive }) =>
-                  cn("tap shrink-0 border-b-[3px] px-3 py-2 text-sm font-bold", isActive ? "border-pitch-300 text-white" : "border-transparent text-white/65")
+                  cn("tap shrink-0 border-b-[3px] px-3 py-2 text-sm font-bold", isActive ? "border-pitch-300 text-white" : "border-transparent text-white/95")
                 }
               >
                 {label}

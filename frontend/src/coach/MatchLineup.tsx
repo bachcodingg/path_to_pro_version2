@@ -141,11 +141,11 @@ export function MatchLineup({ rows, me, linkFor }: { rows: LineupRow[]; me?: str
               >
                 <circle
                   r={5.2}
-                  fill={selected === row.player.id ? "#fff" : "#111b30"}
+                  fill={selected === row.player.id ? "#fff" : "var(--surface)"}
                   stroke={me === row.player.id ? "#f0c020" : "#fff"}
                   strokeWidth={me === row.player.id ? 1.4 : 0.6}
                 />
-                <text y={1.8} textAnchor="middle" fontSize={4.6} fontWeight={800} fill={selected === row.player.id ? "#111b30" : "#fff"}>
+                <text y={1.8} textAnchor="middle" fontSize={4.6} fontWeight={800} fill={selected === row.player.id ? "var(--surface)" : "#fff"}>
                   {row.player.name[0]}
                 </text>
                 <rect x={2.5} y={-10} width={10} height={5.6} rx={1.4} fill={b ? HEX[b] : "#667"} />
@@ -195,7 +195,7 @@ export function MatchLineup({ rows, me, linkFor }: { rows: LineupRow[]; me?: str
                 </p>
               </div>
               {linkFor && (
-                <Link to={linkFor(sel.player.id)} className="text-pitch-600 text-sm font-semibold hover:underline">
+                <Link to={linkFor(sel.player.id)} className="text-pitch-300 text-sm font-semibold hover:underline">
                   Profile
                 </Link>
               )}
@@ -203,7 +203,7 @@ export function MatchLineup({ rows, me, linkFor }: { rows: LineupRow[]; me?: str
             <StatGrid r={sel} />
             {sel.recent && sel.recent.length > 1 && (
               <div>
-                <p className="text-ink-2 text-xs font-semibold uppercase">Last {sel.recent.length} ratings</p>
+                <p className="text-ink-2 text-xs font-semibold">Last {sel.recent.length} ratings</p>
                 <div className="h-16" aria-label={`Recent ratings: ${sel.recent.map((x) => x.rating).join(", ")}`}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={sel.recent} margin={{ top: 4, right: 4, left: 4, bottom: 4 }}>
@@ -216,7 +216,7 @@ export function MatchLineup({ rows, me, linkFor }: { rows: LineupRow[]; me?: str
               </div>
             )}
             <div>
-              <p className="text-ink-2 mb-1 text-xs font-semibold uppercase">Why this rating</p>
+              <p className="text-ink-2 mb-1 text-xs font-semibold">Why this rating</p>
               <Breakdown items={sel.breakdown} />
             </div>
           </Card>

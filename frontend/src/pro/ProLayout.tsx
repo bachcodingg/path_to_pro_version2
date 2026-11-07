@@ -24,16 +24,16 @@ export function ProLayout() {
   return (
     <div className="app-bg text-ink min-h-full">
       <SkipLink />
-      <header className="sticky top-0 z-30 bg-[#060b1a] text-white shadow-lg">
+      <header className="sticky top-0 z-30 bg-pitch-950 text-white shadow-lg">
         <div className="flex items-center justify-between gap-3 px-4 pt-2.5 md:px-6">
           <Link to="/pro" className="flex items-center gap-2.5">
             <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-8 w-8" />
-            <span className="font-display text-xl font-extrabold tracking-wide uppercase">
+            <span className="brandmark text-xl">
               PathToPro <span className="text-pitch-300">Pro leagues</span>
             </span>
           </Link>
           {user && (
-            <Link to={homeFor(user.role)} className="tap flex items-center gap-1.5 text-sm font-semibold text-white/80 hover:text-white">
+            <Link to={homeFor(user.role)} className="tap flex items-center gap-1.5 text-sm font-semibold text-white/95 hover:text-white">
               <ArrowLeft className="h-4 w-4" aria-hidden /> <span className="hidden sm:inline">Back to</span> my app
             </Link>
           )}
@@ -43,7 +43,7 @@ export function ProLayout() {
             to="/pro"
             end
             className={({ isActive }) =>
-              cn("tap flex shrink-0 items-center gap-1.5 border-b-[3px] px-3 py-2 text-sm font-bold", isActive ? "border-pitch-300" : "border-transparent text-white/65 hover:text-white")
+              cn("tap flex shrink-0 items-center gap-1.5 border-b-[3px] px-3 py-2 text-sm font-bold", isActive ? "border-pitch-300" : "border-transparent text-white/95 hover:text-white")
             }
           >
             <Trophy className="h-4 w-4" aria-hidden /> All
@@ -53,7 +53,7 @@ export function ProLayout() {
               key={c.id}
               to={`/pro/${c.id}`}
               className={({ isActive }) =>
-                cn("tap flex shrink-0 items-center gap-2 border-b-[3px] px-3 py-2 text-sm font-bold", isActive ? "text-white" : "border-transparent text-white/65 hover:text-white")
+                cn("tap flex shrink-0 items-center gap-2 border-b-[3px] px-3 py-2 text-sm font-bold", isActive ? "text-white" : "border-transparent text-white/95 hover:text-white")
               }
               style={({ isActive }) => (isActive ? { borderColor: COMP_COLOR[c.id] } : undefined)}
             >

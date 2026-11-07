@@ -146,7 +146,7 @@ export function Account() {
           <SectionTitle>Delete account</SectionTitle>
           {deletion.data?.allowed ? (
             confirmDelete ? (
-              <form onSubmit={remove} className="border-danger/40 space-y-3 rounded-xl border p-3">
+              <form onSubmit={remove} className="border-danger/40 space-y-3 rounded-md border p-3">
                 <p className="text-sm">
                   This deletes your account and everything PathToPro stores about you, at once. It can't be undone.
                 </p>

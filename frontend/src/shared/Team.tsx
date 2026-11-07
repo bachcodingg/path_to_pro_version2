@@ -48,7 +48,7 @@ export function AnnouncementsCard() {
   if (!data?.length) return null;
   return (
     <Card className="border-pitch-400/60">
-      <p className="text-pitch-300 mb-1 flex items-center gap-2 text-xs font-bold tracking-[0.12em] uppercase">
+      <p className="text-pitch-300 mb-1 flex items-center gap-2 text-xs font-bold">
         <Megaphone className="h-4 w-4" aria-hidden /> From your coach
       </p>
       <ul className="space-y-2">
@@ -123,7 +123,7 @@ export function PlayerTeam() {
                 {e.available === false && (
                   <select
                     aria-label={`Why you can't make ${e.title}`}
-                    className="bg-surface-2 border-line h-11 rounded-xl border px-2 text-sm"
+                    className="bg-surface-2 border-line h-11 rounded-md border px-2 text-sm"
                     value={e.reason ?? "other"}
                     onChange={(ev) => answer(e, false, ev.target.value)}
                   >
@@ -192,7 +192,7 @@ export function CoachTeam() {
           <SectionTitle>Next three weeks</SectionTitle>
           <Card className="overflow-x-auto p-0">
             <table className="w-full text-sm">
-              <thead className="text-ink-2 text-left text-xs uppercase">
+              <thead className="text-ink-2 text-left text-xs">
                 <tr>
                   <th className="px-4 py-2">Event</th>
                   <th className="px-4 py-2">In</th>
@@ -204,7 +204,7 @@ export function CoachTeam() {
                 {events.data.events.map((e) => (
                   <tr key={e.key} className="border-line border-t align-top">
                     <td className="px-4 py-2">
-                      <p className={cn("font-semibold", e.kind === "match" && "text-pitch-600 dark:text-pitch-300")}>{e.title}</p>
+                      <p className={cn("font-semibold", e.kind === "match" && "text-pitch-300")}>{e.title}</p>
                       <p className="text-ink-2 text-xs">{when(e)}</p>
                     </td>
                     <td className="num px-4 py-2 font-bold">{Number(e.available ?? 0)}</td>
@@ -243,7 +243,7 @@ export function CoachTeam() {
               <form onSubmit={post} className="space-y-3">
                 <textarea
                   aria-label="Message"
-                  className="bg-surface-2 border-line text-ink min-h-28 w-full rounded-xl border p-3 text-[15px]"
+                  className="bg-surface-2 border-line text-ink min-h-28 w-full rounded-md border p-3 text-[15px]"
                   required
                   minLength={2}
                   maxLength={1000}

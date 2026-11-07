@@ -123,7 +123,7 @@ export function CheckIn() {
                       aria-pressed={mood === v}
                       onClick={() => setMood(v)}
                       className={cn(
-                        "tap border-line flex flex-col items-center rounded-xl border-2 py-3 font-semibold",
+                        "tap border-line flex flex-col items-center rounded-md border-2 py-3 font-semibold",
                         mood === v && "border-pitch-300 bg-pitch-800/40",
                       )}
                     >
@@ -140,7 +140,7 @@ export function CheckIn() {
                   </p>
                 )}
               </fieldset>
-              <label className="border-line flex items-center justify-between rounded-xl border p-3">
+              <label className="border-line flex items-center justify-between rounded-md border p-3">
                 <span className="font-semibold">{t("checkin.pain")}</span>
                 <input type="checkbox" className="accent-recover h-6 w-6" checked={pain} onChange={(e) => setPain(e.target.checked)} />
               </label>

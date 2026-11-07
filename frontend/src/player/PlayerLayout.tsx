@@ -91,7 +91,7 @@ function Avatar({ initials, className }: { initials: string; className?: string 
   return (
     <span
       className={cn(
-        "bg-pitch-300 text-pitch-950 font-display ring-pitch-300/30 flex shrink-0 items-center justify-center rounded-full font-bold ring-4",
+        "bg-pitch-300 text-pitch-950 font-display flex shrink-0 items-center justify-center rounded-full font-black",
         className,
       )}
       aria-hidden
@@ -110,22 +110,20 @@ export function PlayerLayout() {
   useDocumentTitle([...NAV, ...EXTRAS], "Player");
   const link = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "tap flex items-center gap-3 rounded-xl px-3 py-2 font-semibold",
-      isActive
-        ? "relative bg-white/10 text-white before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-full before:bg-pitch-300"
-        : "text-ink-2 hover:bg-white/5 hover:text-ink",
+      "tap flex items-center gap-3 rounded-md px-3 py-2 font-semibold",
+      isActive ? "bg-pitch-300 text-pitch-950 font-bold" : "text-ink-2 hover:bg-white/5 hover:text-ink",
     );
   return (
     <div className="dark display-headings app-bg text-ink min-h-full md:flex">
       <SkipLink />
-      <aside className="bg-surface border-line sticky top-0 hidden h-[calc(100vh-var(--banner-h,0px))] w-60 shrink-0 flex-col border-r p-4 md:flex">
+      <aside className="app-rail border-line sticky top-0 hidden h-[calc(100vh-var(--banner-h,0px))] w-60 shrink-0 flex-col border-r p-4 md:flex">
         <div className="mb-6 flex items-center gap-2">
           <img
             src={`${import.meta.env.BASE_URL}icon.svg`}
             alt=""
             className="h-8 w-8"
           />
-          <span className="font-display text-xl font-extrabold tracking-wide uppercase">PathToPro</span>
+          <span className="brandmark text-xl">PathToPro</span>
         </div>
         <nav
           aria-label="Player navigation"
@@ -175,9 +173,9 @@ export function PlayerLayout() {
               alt=""
               className="h-8 w-8"
             />
-            <span className="font-display text-xl font-extrabold tracking-wide uppercase">PathToPro</span>
+            <span className="brandmark text-[1.02rem]">PathToPro</span>
           </div>
-          <span className="flex items-center gap-1">
+          <span className="flex items-center">
             <Link
               to="/pro"
               className="tap text-ink-2 flex h-11 w-11 items-center justify-center"
@@ -212,7 +210,7 @@ export function PlayerLayout() {
           <Outlet />
         </main>
         <nav
-          className="bg-surface border-line fixed inset-x-0 bottom-0 border-t pb-[env(safe-area-inset-bottom)] md:hidden"
+          className="app-rail border-line fixed inset-x-0 bottom-0 z-20 border-t pb-[env(safe-area-inset-bottom)] md:hidden"
           aria-label="Player navigation"
         >
           <ul
@@ -230,7 +228,7 @@ export function PlayerLayout() {
                     cn(
                       "tap relative flex flex-col items-center justify-center gap-0.5 py-2 text-center text-[10.5px] leading-tight font-semibold",
                       // the active tab gets a bar along the top edge, as in the league apps
-                      isActive ? "text-pitch-300 before:bg-pitch-300 before:absolute before:inset-x-3 before:top-0 before:h-[3px] before:rounded-b-full" : "text-ink-2",
+                      isActive ? "text-pitch-300 before:bg-pitch-300 before:absolute before:inset-x-2 before:top-0 before:h-1" : "text-ink-2",
                     )
                   }
                 >

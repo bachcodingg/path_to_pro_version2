@@ -22,13 +22,12 @@ export function DemoBanner() {
     resetDemo();
   }
   return (
-    <div ref={ref} role="note" className="bg-caution px-3 py-1 text-center text-xs font-semibold text-pitch-950">
-      Demo · synthetic data · runs in your browser, nothing is sent anywhere ·{" "}
+    <div ref={ref} role="note" className="bg-pitch-950 px-3 py-1 text-center text-[13px] font-semibold text-[#f7f8f1]">
+      Demo with synthetic data. It runs in your browser and nothing is sent anywhere.{" "}
       <button className="underline" onClick={reset}>
         Reset demo
       </button>{" "}
-      ·{" "}
-      <a className="underline" href="https://github.com/bachcodingg/path_to_pro">
+      <a className="ml-1 underline" href="https://github.com/bachcodingg/path_to_pro">
         Source
       </a>
     </div>

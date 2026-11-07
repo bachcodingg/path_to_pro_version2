@@ -12,6 +12,8 @@ import { BAND_BG, BAND_MIN, BAND_TEXT, BandIcon, Button, Card, Chip, ErrorNote, 
 import { MatchDiary } from "./MatchDiary";
 import { TipBody, type TipsData } from "./Tips";
 
+const BATTERY_CELLS = 20;
+
 export function TodayScreen() {
   const { data, setData, error, loading, reload } = useApi<Today>("/api/me/today");
   const { user } = useAuth();
@@ -28,19 +30,38 @@ export function TodayScreen() {
   const r = data.readiness;
   return (
     <div className="space-y-5 pt-2">
-      <div className="flex items-end justify-between">
-        <div>
-          <p className="text-ink-2 text-sm">
-            {new Date(data.date + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
-          </p>
-          <h1 className="text-2xl font-extrabold">Hi {data.name.split(" ")[0]}</h1>
+      <section className="hero turf-sheet dark today-hero" aria-label="Today">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[15px] font-semibold">
+              {new Date(data.date + "T12:00:00").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
+            </p>
+            <h1>Hi {data.name.split(" ")[0]}</h1>
+          </div>
+          {data.streak > 0 && (
+            <span className="bg-pitch-950/70 flex items-center gap-1 rounded-md px-2.5 py-1 font-bold" title="Check-in streak">
+              <Flame className="text-caution h-5 w-5" aria-hidden /> <span className="sr-only">Check-in streak</span> {data.streak}
+            </span>
+          )}
         </div>
-        {data.streak > 0 && (
-          <span className="text-caution flex items-center gap-1 font-bold" title="Check-in streak">
-            <Flame className="h-5 w-5" aria-hidden /> {data.streak}
-          </span>
+        <div className="mt-4">
+          <Battery
+            score={r?.score ?? null}
+            band={r?.band ?? null}
+            stale={!data.readiness_is_today}
+            hrv={r?.components ? "hrv" in r.components : true}
+          />
+        </div>
+        {data.flags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {data.flags.map((f) => (
+              <span key={f.kind} className="bg-pitch-950/70 rounded-md px-2.5 py-1 text-[13px] font-semibold">
+                {f.text}
+              </span>
+            ))}
+          </div>
         )}
-      </div>
+      </section>
 
       <AnnouncementsCard />
 
@@ -80,37 +101,22 @@ export function TodayScreen() {
             </Link>
           ) : !data.checked_in && (
             <Link to="/player/checkin" className="block">
-              <Card className="bg-pitch-700 border-pitch-500 text-white">
-                <p className="text-lg font-bold">{t("checkin.title")}</p>
-                <p className="text-pitch-100 text-sm">{t("checkin.subtitle")} Tap to start.</p>
+              <Card className="bg-pitch-300 border-pitch-300 text-pitch-950 hover:bg-pitch-200">
+                <p className="font-display text-xl leading-tight font-extrabold">{t("checkin.title")}</p>
+                <p className="text-[15px] font-semibold">{t("checkin.subtitle")} Tap to start.</p>
               </Card>
             </Link>
-          )}
-
-          <Battery
-            score={r?.score ?? null}
-            band={r?.band ?? null}
-            stale={!data.readiness_is_today}
-            hrv={r?.components ? "hrv" in r.components : true}
-          />
-
-          {data.flags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {data.flags.map((f) => (
-                <Chip key={f.kind}>{f.text}</Chip>
-              ))}
-            </div>
           )}
 
           <section>
             <SectionTitle>{t("today.session")}</SectionTitle>
             <Card className="flex items-center gap-4">
               <div
-                className={cn("flex h-14 w-14 flex-col items-center justify-center rounded-xl leading-none", intensityClass(data.session.kind, data.session.rpe))}
+                className={cn("flex h-14 w-14 flex-col items-center justify-center rounded-md leading-none", intensityClass(data.session.kind, data.session.rpe))}
                 aria-hidden
               >
                 <span className="text-lg font-extrabold">{data.session.kind === "rest" ? "–" : data.session.rpe}</span>
-                {data.session.kind !== "rest" && <span className="mt-0.5 text-[10px] font-semibold tracking-wide uppercase opacity-80">effort</span>}
+                {data.session.kind !== "rest" && <span className="mt-0.5 text-[10px] font-semibold opacity-80">effort</span>}
               </div>
               <div>
                 <p className="text-lg font-bold">{data.session.label}</p>
@@ -234,36 +240,38 @@ export function Battery({
   stale?: boolean;
   hrv?: boolean;
 }) {
-  const pct = score == null ? 0 : Math.max(4, Math.min(100, score));
+  const lit = score == null ? 0 : Math.max(1, Math.round((Math.min(100, score) / 100) * BATTERY_CELLS));
   return (
-    <Card aria-label={`Readiness ${score == null ? "unknown" : Math.round(score)} of 100, ${band ? BAND_TEXT[band] : "no data"}`}>
-      <div className="flex items-center gap-4">
-        <div className="border-ink-2 relative h-16 flex-1 rounded-xl border-2 p-1">
-          <div
-            className={cn("h-full rounded-lg transition-[width] duration-500 motion-reduce:transition-none", band ? BAND_BG[band] : "bg-surface-2")}
-            style={{ width: `${pct}%` }}
-          />
-          <div className="bg-ink-2 absolute top-1/2 -right-2 h-6 w-1.5 -translate-y-1/2 rounded-r" />
+    <div>
+      <div className="flex items-center gap-4 md:gap-6">
+        <div
+          className="led-battery flex-1"
+          role="img"
+          aria-label={`Readiness ${score == null ? "unknown" : Math.round(score)} of 100, ${band ? BAND_TEXT[band] : "no data"}`}
+        >
+          {Array.from({ length: BATTERY_CELLS }, (_, i) => (
+            <span key={i} className={cn(i < lit && (band ? BAND_BG[band] : "bg-white/40"))} />
+          ))}
         </div>
-        <div className="w-24 text-right">
-          <p className="text-3xl font-extrabold">{score == null ? "–" : Math.round(score)}</p>
-          <p className="flex items-center justify-end gap-1 text-sm font-semibold">
+        <div className="shrink-0 text-right">
+          <p className="font-display num text-[3.1rem] leading-none font-black md:text-[3.6rem]">{score == null ? "–" : Math.round(score)}</p>
+          <p className="flex items-center justify-end gap-1 text-[15px] font-bold">
             <BandIcon band={band} className="h-4 w-4" />
             {band ? BAND_TEXT[band] : "No data"}
           </p>
         </div>
       </div>
-      <p className="text-ink-2 mt-2 text-sm">
+      <p className="text-ink-2 mt-2 text-[15px]">
         {t("today.battery")} from sleep{hrv ? ", heart-rate variability" : ""} and your check-in.
         {stale && " Showing your last reading: check in to update it."}
       </p>
       {heldBack(band, score) && (
-        <p className="text-ink-2 mt-1 text-sm">
+        <p className="text-ink-2 mt-1 text-[15px]">
           Still {band ? BAND_TEXT[band] : ""}: after a tougher day your colour comes back at{" "}
           {(band === "red" ? BAND_MIN.amber : BAND_MIN.green) + HOLD_UP}, so one good night doesn't flip it.
         </p>
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -340,7 +348,7 @@ function LogSession({ today, onLogged }: { today: Today; onLogged: (t: Today) =>
           <label className="block">
             <span className="text-sm font-semibold">Session</span>
             <select
-              className="bg-surface-2 border-line mt-1 h-11 w-full rounded-xl border px-3"
+              className="bg-surface-2 border-line mt-1 h-11 w-full rounded-md border px-3"
               value={kind}
               onChange={(e) => setKind(e.target.value as SessionKind)}
             >
@@ -381,7 +389,7 @@ function TipOfTheDay() {
     <section>
       <SectionTitle action={<Link to="/player/tips" className="text-pitch-300 text-sm font-semibold">All tips →</Link>}>Tip for today</SectionTitle>
       <Card>
-        <p className="text-pitch-300 flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase">
+        <p className="text-pitch-300 flex items-center gap-1.5 text-xs font-bold">
           <Lightbulb className="h-4 w-4" aria-hidden /> {data.today.reason}
         </p>
         <TipBody t={data.today} />

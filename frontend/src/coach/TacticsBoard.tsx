@@ -38,7 +38,7 @@ const SLOTS = [
 ];
 // Pain and red readiness are for staff, not for the line-up: shown as an alert
 const isAlarm = (flag: string) => /pain|red/i.test(flag);
-const FILL: Record<Band, string> = { green: "#2f7fe0", amber: "#e3a008", red: "#ea6a12" };
+const FILL: Record<Band, string> = { green: "var(--color-ready)", amber: "var(--color-caution)", red: "var(--color-recover)" };
 
 export function TacticsBoard() {
   const { data, error, loading, reload } = useApi<Lineup>("/api/coach/lineup");
@@ -83,21 +83,21 @@ export function TacticsBoard() {
             {data.match ? (
               <span className="flex items-center gap-3">
                 <Crest name="PathToPro Academy" size={36} />
-                <span className="font-display text-xl font-bold uppercase">vs</span>
+                <span className="font-display text-xl font-bold">vs</span>
                 <Crest name={data.match.opponent} size={36} />
                 <span>
                   <span className="block font-bold">Next: {data.match.opponent}</span>
-                  <span className="text-sm text-white/75">
+                  <span className="text-sm text-white/95">
                     {data.match.competition ?? "Match"} · {fmtDay(data.match.date, { weekday: "long", day: "numeric", month: "short" })}
                   </span>
                 </span>
               </span>
             ) : (
-              <span className="text-white/75">No upcoming match</span>
+              <span className="text-white/95">No upcoming match</span>
             )}
             <span className="md:ml-auto">
               <span className="font-display text-4xl leading-none font-bold">{avg(xi) ?? "–"}</span>
-              <span className="ml-2 text-sm text-white/75">starting XI average readiness</span>
+              <span className="ml-2 text-sm text-white/95">starting XI average readiness</span>
             </span>
           </div>
         }
@@ -121,7 +121,7 @@ export function TacticsBoard() {
                   aria-label={`${s.pos}: ${p?.name ?? "empty"}, readiness ${p?.readiness ?? "unknown"}`}
                   onKeyDown={(e) => e.key === "Enter" && picked && place(i, picked)}
                 >
-                  <circle r={6.5} fill={p?.band ? FILL[p.band] : "#6b7f74"} stroke={p?.phv ? "#e3a008" : "#fff"} strokeWidth={p?.phv ? 1.6 : 0.8} />
+                  <circle r={6.5} fill={p?.band ? FILL[p.band] : "#6b7f74"} stroke={p?.phv ? "var(--color-caution)" : "#fff"} strokeWidth={p?.phv ? 1.6 : 0.8} />
                   <text y={2} textAnchor="middle" fontSize={4.5} fontWeight={800} fill="#fff">
                     {p?.readiness != null ? Math.round(p.readiness) : "–"}
                   </text>
@@ -167,7 +167,7 @@ export function TacticsBoard() {
                     onDragStart={(e) => e.dataTransfer.setData("text/plain", p.id)}
                     onClick={() => setPicked(picked === p.id ? null : p.id)}
                     onMouseEnter={() => setHover(p)}
-                    className={cn("tap border-line flex w-full items-center justify-between rounded-xl border px-3", picked === p.id && "ring-pitch-400 ring-2")}
+                    className={cn("tap border-line flex w-full items-center justify-between rounded-md border px-3", picked === p.id && "ring-pitch-400 ring-2")}
                     aria-pressed={picked === p.id}
                   >
                     <span className="font-medium">

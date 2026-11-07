@@ -25,7 +25,7 @@ function CopyField({ label, value }: { label: string; value: string }) {
   const [done, setDone] = useState(false);
   return (
     <div>
-      <p className="text-ink-2 text-xs font-semibold uppercase">{label}</p>
+      <p className="text-ink-2 text-xs font-semibold">{label}</p>
       <div className="mt-1 flex gap-2">
         <code className="bg-surface-2 border-line min-w-0 flex-1 truncate rounded-lg border px-2 py-2 text-xs" aria-label={label}>
           {value}
@@ -145,7 +145,7 @@ export function Devices() {
             <SectionTitle>1. Automatic daily sync (iPhone Shortcut)</SectionTitle>
             <Card className="space-y-3">
               {data.tokens.map((t) => (
-                <div key={t.id} className="border-line flex items-center justify-between gap-2 rounded-xl border p-3">
+                <div key={t.id} className="border-line flex items-center justify-between gap-2 rounded-md border p-3">
                   <div className="min-w-0">
                     <p className="font-semibold">{t.label}</p>
                     <p className="text-ink-2 text-xs">
@@ -158,7 +158,7 @@ export function Devices() {
                 </div>
               ))}
               {fresh ? (
-                <div className="border-pitch-500 space-y-3 rounded-xl border p-3">
+                <div className="border-pitch-500 space-y-3 rounded-md border p-3">
                   <p className="font-semibold">Your connection details (the code is shown only once)</p>
                   <CopyField label="URL" value={`${window.location.origin}/api/ingest/apple-health`} />
                   <CopyField label="Device code" value={fresh.token} />

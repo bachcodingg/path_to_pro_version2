@@ -31,34 +31,35 @@ export function PlayerCard() {
       {/* Wide screens: the card on the left, the tests beside it */}
       <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
         <div className="space-y-5">
-          <div className="rounded-3xl bg-gradient-to-br from-amber-300 via-amber-200 to-amber-500 p-1 shadow-lg">
-            <div className="rounded-[20px] bg-gradient-to-br from-pitch-800 to-pitch-950 p-5 text-white">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-5xl font-extrabold">{overall}</p>
-                  <p className="text-pitch-200 text-xs font-semibold uppercase">avg percentile</p>
-                </div>
-                <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-10 w-10" />
-              </div>
-              <p className="mt-4 text-2xl font-extrabold">{data.name}</p>
-              <p className="text-pitch-200 text-sm">Compared with players {STATUS_TEXT[data.maturity_status] ?? ""}</p>
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {(["speed", "power", "endurance"] as const).map((attr) => {
-                  const items = byAttr(attr);
-                  const v = items.length ? Math.round(items.reduce((s, a) => s + a.bio_percentile, 0) / items.length) : null;
-                  return (
-                    <button
-                      key={attr}
-                      onClick={() => setOpen(items[0]?.kpi ?? null)}
-                      className="tap rounded-xl bg-white/10 py-2 text-center hover:bg-white/20"
-                      aria-label={`${attr}: ${v ?? "no data"} percentile`}
-                    >
-                      <p className="text-2xl font-extrabold">{v ?? "–"}</p>
-                      <p className="text-[11px] font-semibold tracking-wide uppercase">{attr}</p>
-                    </button>
-                  );
-                })}
-              </div>
+          <div className="hero turf-sheet px-4 pt-5 pb-4">
+            {/* The back of a shirt: name across the shoulders, the average percentile as the number */}
+            <svg viewBox="0 0 320 300" className="mx-auto w-full max-w-[19rem]" role="img" aria-label={`${data.name}, average percentile ${overall}`}>
+              <path d="M104 12c14 14 98 14 112 0l74 34 26 78-58 18-8-30v176c-54 10-132 10-180 0V112l-8 30-58-18 26-78z" fill="var(--brand-300)" stroke="#0a2a1e" strokeWidth="3" strokeLinejoin="round" />
+              <path d="M104 12c14 14 98 14 112 0" fill="none" stroke="#0a2a1e" strokeWidth="9" />
+              <text x="160" y="84" textAnchor="middle" className="font-display" fontSize="30" fontWeight="800" fill="#0a2a1e">
+                {data.name}
+              </text>
+              <text x="160" y="222" textAnchor="middle" className="font-display" fontSize="128" fontWeight="900" fill="#0a2a1e">
+                {overall}
+              </text>
+            </svg>
+            <p className="mt-2 text-center text-[15px]">Average percentile, compared with players {STATUS_TEXT[data.maturity_status] ?? ""}</p>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {(["speed", "power", "endurance"] as const).map((attr) => {
+                const items = byAttr(attr);
+                const v = items.length ? Math.round(items.reduce((s, a) => s + a.bio_percentile, 0) / items.length) : null;
+                return (
+                  <button
+                    key={attr}
+                    onClick={() => setOpen(items[0]?.kpi ?? null)}
+                    className="tap bg-pitch-950/70 hover:bg-pitch-950 rounded-md py-2 text-center"
+                    aria-label={`${attr}: ${v ?? "no data"} percentile`}
+                  >
+                    <p className="font-display text-3xl leading-none font-black">{v ?? "–"}</p>
+                    <p className="mt-1 text-[13px] font-semibold capitalize">{attr}</p>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -82,9 +83,9 @@ export function PlayerCard() {
               <div className="h-40">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={selected.history} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
-                    <XAxis dataKey="date" tickFormatter={(d) => d.slice(5)} fontSize={11} stroke="#a8b4c8" />
-                    <YAxis domain={["auto", "auto"]} reversed={selected.unit === "s"} fontSize={11} stroke="#a8b4c8" />
-                    <Tooltip contentStyle={{ background: "#111b30", border: "1px solid #24324d" }} />
+                    <XAxis dataKey="date" tickFormatter={(d) => d.slice(5)} fontSize={11} stroke="var(--ink-2)" />
+                    <YAxis domain={["auto", "auto"]} reversed={selected.unit === "s"} fontSize={11} stroke="var(--ink-2)" />
+                    <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--line)" }} />
                     <Line dataKey="value" stroke="var(--brand-300)" strokeWidth={3} dot />
                   </LineChart>
                 </ResponsiveContainer>
@@ -94,7 +95,7 @@ export function PlayerCard() {
                   <p className="mt-3 font-bold">Your drills</p>
                   <ul className="mt-1 space-y-2">
                     {selected.drills.map((d) => (
-                      <li key={d.id} className="bg-surface-2 rounded-xl p-3">
+                      <li key={d.id} className="bg-surface-2 rounded-md p-3">
                         <p className="font-semibold">{d.name}</p>
                         <p className="text-ink-2 text-sm">{d.description}</p>
                         <div className="mt-1 flex gap-2">
@@ -119,7 +120,7 @@ export function PlayerCard() {
 
 function AttrRow({ a, active, onClick }: { a: Attribute; active: boolean; onClick: () => void }) {
   return (
-    <button onClick={onClick} className={cn("bg-surface border-line tap w-full rounded-2xl border p-3 text-left", active && "border-pitch-300")} aria-expanded={active}>
+    <button onClick={onClick} className={cn("bg-surface border-line tap w-full rounded-[10px] border p-3 text-left", active && "border-pitch-300")} aria-expanded={active}>
       <div className="flex items-center justify-between">
         <span className="font-semibold">{capitalize(a.label)}</span>
         <span className="text-ink-2 text-sm">

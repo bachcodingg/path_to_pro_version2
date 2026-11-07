@@ -71,7 +71,7 @@ export function MatchDiary({ due, position, onSaved }: { due: DiaryDue[]; positi
             {due.map((d) => (
               <li key={d.match_id}>
                 <button
-                  className="tap border-line hover:bg-surface-2 flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left"
+                  className="tap border-line hover:bg-surface-2 flex w-full items-center justify-between rounded-md border px-3 py-2 text-left"
                   onClick={() => {
                     setOpen(d.match_id);
                     setMinutes(d.minutes ?? 90);
@@ -103,7 +103,7 @@ export function MatchDiary({ due, position, onSaved }: { due: DiaryDue[]; positi
             </label>
             <label className="block">
               <span className="text-sm font-semibold">Position</span>
-              <select className="bg-surface-2 border-line mt-1 h-11 w-full rounded-xl border px-3" value={pos} onChange={(e) => setPos(e.target.value as Position)}>
+              <select className="bg-surface-2 border-line mt-1 h-11 w-full rounded-md border px-3" value={pos} onChange={(e) => setPos(e.target.value as Position)}>
                 {Object.entries(POSITION_LABEL).map(([k, v]) => (
                   <option key={k} value={k}>
                     {v}
@@ -123,7 +123,7 @@ export function MatchDiary({ due, position, onSaved }: { due: DiaryDue[]; positi
                     aria-pressed={rating === n}
                     aria-label={`Self-rating ${n}`}
                     onClick={() => setRating(n)}
-                    className={cn("tap h-11 rounded-lg border text-sm font-bold", rating === n ? "bg-pitch-600 border-pitch-600 text-white" : "border-line")}
+                    className={cn("tap h-11 rounded-lg border text-sm font-bold", rating === n ? "bg-pitch-300 border-pitch-300 text-pitch-950" : "border-line")}
                   >
                     {n}
                   </button>

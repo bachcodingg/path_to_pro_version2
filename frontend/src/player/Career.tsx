@@ -91,10 +91,10 @@ export function Career() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={data.ladder} margin={{ top: 12, right: 16, left: -16, bottom: 0 }}>
                     <CartesianGrid stroke="rgba(255,255,255,0.08)" />
-                    <XAxis dataKey="season" fontSize={11} stroke="#a8b4c8" />
-                    <YAxis domain={[0, 100]} fontSize={11} stroke="#a8b4c8" />
+                    <XAxis dataKey="season" fontSize={11} stroke="var(--ink-2)" />
+                    <YAxis domain={[0, 100]} fontSize={11} stroke="var(--ink-2)" />
                     <Tooltip
-                      contentStyle={{ background: "#111b30", border: "1px solid #24324d" }}
+                      contentStyle={{ background: "var(--surface)", border: "1px solid var(--line)" }}
                       formatter={(v: number, _n, p) => [`${p.payload.competition_label} (level ${v})`, "Highest league"]}
                     />
                     <Line type="stepAfter" dataKey="level" stroke="#f0a020" strokeWidth={3} dot={{ r: 5 }} />
@@ -202,7 +202,7 @@ function AddSeason({ data, onSaved }: { data: CareerData; onSaved: (c: CareerDat
   const [f, setF] = useState({ season: String(Number(data.season) - 1), club: "", team: "", competition: data.competitions[0]?.id ?? "", apps: 0, starts: 0, minutes: 0, goals: 0, assists: 0 });
   const [error, setError] = useState<string | null>(null);
   const set = (k: keyof typeof f, v: string | number) => setF((x) => ({ ...x, [k]: v }));
-  const input = "bg-surface-2 border-line mt-1 h-11 w-full rounded-xl border px-3";
+  const input = "bg-surface-2 border-line mt-1 h-11 w-full rounded-md border px-3";
 
   async function submit(e: FormEvent) {
     e.preventDefault();

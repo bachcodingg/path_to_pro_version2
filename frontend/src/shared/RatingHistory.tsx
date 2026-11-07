@@ -46,7 +46,7 @@ function Tip({ active, payload }: { active?: boolean; payload?: { payload: Histo
   if (!active || !payload?.length) return null;
   const p = payload[0].payload;
   return (
-    <div className="rounded-lg border border-[#24324d] bg-[#111b30] p-2 text-xs text-white">
+    <div className="rounded-lg border border-[var(--line)] bg-[var(--surface)] p-2 text-xs text-white">
       <p className="font-bold">
         {p.label}: {p.rating.toFixed(1)}
       </p>
@@ -69,7 +69,7 @@ function Tip({ active, payload }: { active?: boolean; payload?: { payload: Histo
 export function RatingHistory({ data, dark = true }: { data: RatingHistoryData; dark?: boolean }) {
   const { points, progress } = data;
   if (points.length === 0) return <Card className="text-ink-2 text-sm">No rated matches yet.</Card>;
-  const axis = dark ? "#a8b4c8" : "#5b6780";
+  const axis = dark ? "var(--ink-2)" : "#5b6780";
   const grid = dark ? "rgba(255,255,255,0.08)" : "#e3e8f1";
   const Icon = progress.verdict === "improving" ? TrendingUp : progress.verdict === "dipping" ? TrendingDown : Minus;
   const tone = progress.verdict === "improving" ? "green" : progress.verdict === "dipping" ? "red" : "neutral";

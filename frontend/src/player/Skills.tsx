@@ -41,13 +41,13 @@ export function TrainingSwitch({ active }: { active: "gym" | "skills" }) {
     <Link
       to={to}
       aria-current={active === key ? "page" : undefined}
-      className={cn("tap flex flex-1 items-center justify-center rounded-lg px-3 text-sm font-bold", active === key ? "bg-pitch-600 text-white" : "text-ink-2 hover:text-ink")}
+      className={cn("tap flex flex-1 items-center justify-center rounded-lg px-3 text-sm font-bold", active === key ? "bg-pitch-300 text-pitch-950" : "text-ink-2 hover:text-ink")}
     >
       {label}
     </Link>
   );
   return (
-    <nav aria-label="Training" className="bg-surface border-line flex gap-1 rounded-xl border p-1">
+    <nav aria-label="Training" className="bg-surface border-line flex gap-1 rounded-md border p-1">
       {item("/player/gym", "gym", "Gym session")}
       {item("/player/skills", "skills", "Ball skills")}
     </nav>
@@ -100,7 +100,7 @@ export function Skills() {
             {s.adjustments.length > 0 && (
               <ul className="mt-3 space-y-1">
                 {s.adjustments.map((a) => (
-                  <li key={a} className="border-caution/40 bg-caution/10 flex gap-2 rounded-xl border p-2 text-sm">
+                  <li key={a} className="border-caution/40 bg-caution/10 flex gap-2 rounded-md border p-2 text-sm">
                     <ShieldCheck className="text-caution h-4 w-4 shrink-0" aria-hidden />
                     {a}
                   </li>
@@ -122,7 +122,7 @@ export function Skills() {
             action={
               <label className="text-sm font-semibold">
                 <span className="sr-only">Position</span>
-                <select className="bg-surface border-line h-11 rounded-xl border px-3" value={shown} onChange={(e) => setPos(e.target.value)} aria-label="Drills for position">
+                <select className="bg-surface border-line h-11 rounded-md border px-3" value={shown} onChange={(e) => setPos(e.target.value)} aria-label="Drills for position">
                   {data.positions.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.label}
@@ -142,7 +142,7 @@ export function Skills() {
               </li>
             ))}
           </ul>
-          <p className="text-ink-2 pt-2 text-xs font-bold tracking-wider uppercase">For every position</p>
+          <p className="text-ink-2 pt-2 text-xs font-bold">For every position</p>
           <ul className="space-y-2">
             {everyone.map((d) => (
               <li key={d.id}>
@@ -168,7 +168,7 @@ function DrillCard({ d, index, open: initial = false }: { d: Drill; index?: numb
           </span>
         )}
         <span className="min-w-0 flex-1">
-          {d.block && <span className="text-pitch-300 block text-xs font-bold tracking-wider uppercase">{d.block}</span>}
+          {d.block && <span className="text-pitch-300 block text-xs font-bold">{d.block}</span>}
           <span className="block font-bold">{d.name}</span>
           <span className="text-ink-2 flex flex-wrap items-center gap-x-2 text-sm">
             <span>{d.reps}</span>
@@ -183,7 +183,7 @@ function DrillCard({ d, index, open: initial = false }: { d: Drill; index?: numb
       {open && (
         <div className="space-y-3 px-4 pb-4 text-sm">
           {d.variant && (
-            <p className="border-caution/40 bg-caution/10 flex gap-2 rounded-xl border p-2">
+            <p className="border-caution/40 bg-caution/10 flex gap-2 rounded-md border p-2">
               <ShieldCheck className="text-caution h-4 w-4 shrink-0" aria-hidden />
               {d.variant}
             </p>

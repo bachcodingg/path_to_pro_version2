@@ -101,7 +101,7 @@ export function Inbox() {
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <p className="text-ink-2 text-xs font-semibold uppercase">{KIND_TITLE[p.kind] ?? p.kind}</p>
+              <p className="text-ink-2 text-xs font-semibold">{KIND_TITLE[p.kind] ?? p.kind}</p>
               <p className="text-lg font-bold">{p.player.name}</p>
               <p className="text-sm">{p.reason}</p>
             </div>
@@ -166,7 +166,7 @@ function Strip({
 }) {
   return (
     <div className="flex items-stretch gap-2">
-      <span className="text-ink-2 w-20 shrink-0 pt-2 text-xs font-semibold uppercase">{label}</span>
+      <span className="text-ink-2 w-20 shrink-0 pt-2 text-xs font-semibold">{label}</span>
       <div className="grid flex-1 gap-1" style={{ gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))` }}>
         {days.map((d, i) => {
           const changed = compare && (compare[i]?.kind !== d.kind || compare[i]?.rpe !== d.rpe || compare[i]?.minutes !== d.minutes);

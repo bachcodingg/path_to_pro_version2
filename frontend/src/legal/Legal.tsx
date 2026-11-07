@@ -48,15 +48,15 @@ function Page({ title, children }: { title: string; children: ReactNode }) {
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
           <Link to="/" className="flex items-center gap-2">
             <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-8 w-8" />
-            <span className="font-display text-xl font-extrabold tracking-wide uppercase">PathToPro</span>
+            <span className="brandmark text-xl">PathToPro</span>
           </Link>
-          <LegalLinks className="text-sm text-white/75" />
+          <LegalLinks className="text-sm text-white/95" />
         </div>
-        <h1 className="font-display mx-auto mt-6 max-w-3xl text-4xl font-extrabold uppercase">{title}</h1>
+        <h1 className="font-display mx-auto mt-6 max-w-3xl text-4xl font-extrabold">{title}</h1>
       </header>
       <main id="main" className="legal mx-auto max-w-3xl space-y-4 px-4 py-8 text-[15px] leading-relaxed md:px-6">
         {IS_TEMPLATE && (
-          <p role="note" className="border-caution bg-caution/10 flex gap-2 rounded-xl border p-3 text-sm">
+          <p role="note" className="border-caution bg-caution/10 flex gap-2 rounded-md border p-3 text-sm">
             <ShieldAlert className="h-5 w-5 shrink-0 text-amber-700 dark:text-caution" aria-hidden />
             <span>
               <strong>Template.</strong> The text in [brackets] has to be filled in by whoever runs this service, and the page
@@ -72,7 +72,7 @@ function Page({ title, children }: { title: string; children: ReactNode }) {
 }
 
 function H({ children }: { children: ReactNode }) {
-  return <h2 className="font-display pt-4 text-xl font-bold uppercase">{children}</h2>;
+  return <h2 className="font-display pt-4 text-xl font-bold">{children}</h2>;
 }
 
 export function Imprint() {

@@ -30,7 +30,7 @@ test("player screens render", async ({ page }) => {
   await page.screenshot({ path: `${SHOTS}/player-growth.png`, fullPage: true });
 
   await page.getByRole("link", { name: "My card" }).click();
-  await expect(page.getByText("avg percentile")).toBeVisible();
+  await expect(page.getByText("Average percentile")).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/player-card.png` });
 
   await page.getByRole("link", { name: "Road to Pro" }).click();

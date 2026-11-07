@@ -105,11 +105,11 @@ export function TrainingPitch() {
         title="Training pitch"
         subtitle="Plan a team session; the hard rules are checked for every player."
         actions={
-        <div className="flex items-center gap-1 rounded-xl bg-white/10 p-1">
+        <div className="flex items-center gap-1 rounded-md bg-white/10 p-1">
           <Button variant="ghost" size="sm" aria-label="This week" disabled={offset === 0} onClick={() => (setOffset(0), setPreview(null))}>
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          <span className="font-display min-w-24 text-center text-lg font-bold uppercase">{offset === 0 ? "This week" : "Next week"}</span>
+          <span className="font-display min-w-24 text-center text-lg font-bold">{offset === 0 ? "This week" : "Next week"}</span>
           <Button variant="ghost" size="sm" aria-label="Next week" disabled={offset === 1} onClick={() => (setOffset(1), setPreview(null))}>
             <ChevronRight className="h-5 w-5" />
           </Button>
@@ -132,7 +132,7 @@ export function TrainingPitch() {
               }}
               aria-pressed={picked === i}
               className={cn(
-                "tap cursor-grab rounded-xl px-3 py-2 text-sm font-bold active:cursor-grabbing",
+                "tap cursor-grab rounded-md px-3 py-2 text-sm font-bold active:cursor-grabbing",
                 intensityClass(p.kind, p.rpe),
                 picked === i && "ring-pitch-500 ring-offset-surface ring-2 ring-offset-2",
               )}
@@ -197,7 +197,7 @@ export function TrainingPitch() {
                     onDragOver={(e) => !past && canPlan && (e.preventDefault(), setOver(d))}
                     onDragLeave={() => setOver(null)}
                     onDrop={(e) => !past && canPlan && onDrop(e, d)}
-                    className={cn("rounded-lg p-1 text-center align-top", over === d && "bg-pitch-100 dark:bg-white/10", d === data.today && "text-pitch-700 dark:text-pitch-300")}
+                    className={cn("rounded-lg p-1 text-center align-top", over === d && "bg-pitch-100 dark:bg-white/10", d === data.today && "text-pitch-300")}
                   >
                     <div className="font-bold">{fmtDay(d, { weekday: "short", day: "numeric" })}</div>
                     {canPlan &&

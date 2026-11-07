@@ -80,12 +80,12 @@ export function PlayerProfile() {
           <>
             <span className="text-right">
               <span className="font-display block text-5xl leading-none font-bold">{s?.score != null ? Math.round(s.score) : "–"}</span>
-              <span className="flex items-center justify-end gap-1 text-xs font-bold tracking-wider text-white/75 uppercase">
+              <span className="flex items-center justify-end gap-1 text-xs font-bold text-white/95">
                 <BandIcon band={s?.band ?? null} className="h-3.5 w-3.5" /> {s?.band ? BAND_TEXT[s.band] : "No reading"}
               </span>
             </span>
             <label className="flex items-center gap-2 text-sm">
-              <span className="text-white/75">Position</span>
+              <span className="text-white/95">Position</span>
               <select
                 aria-label="Position"
                 className="h-9 rounded-lg border px-2 font-semibold"
@@ -188,7 +188,7 @@ export function PlayerProfile() {
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Add a note"
                 aria-label="New note"
-                className="bg-surface-2 border-line h-11 flex-1 rounded-xl border px-3"
+                className="bg-surface-2 border-line h-11 flex-1 rounded-md border px-3"
               />
               <Button type="submit" size="sm">
                 Add
@@ -315,7 +315,7 @@ function InstructionBox({ playerId, name, onApplied }: { playerId: string; name:
             placeholder={`e.g. "Keep ${name} light until Thursday, no gym this week"`}
             aria-label="Coach instruction"
             maxLength={300}
-            className="bg-surface-2 border-line mt-1 h-11 w-full rounded-xl border px-3"
+            className="bg-surface-2 border-line mt-1 h-11 w-full rounded-md border px-3"
           />
         </label>
         <Button type="submit" variant="secondary" className="self-end" loading={busy && !preview}>
@@ -337,7 +337,7 @@ function InstructionBox({ playerId, name, onApplied }: { playerId: string; name:
           </div>
           {(["current", "proposed"] as const).map((k) => (
             <div key={k} className="grid grid-cols-[5rem_1fr] items-center gap-2">
-              <span className="text-ink-2 text-xs font-semibold uppercase">{k === "current" ? "Now" : "New"}</span>
+              <span className="text-ink-2 text-xs font-semibold">{k === "current" ? "Now" : "New"}</span>
               <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${preview[k].length}, minmax(0, 1fr))` }}>
                 {preview[k].map((d) => (
                   <div key={d.date} className={cn("rounded-lg p-1 text-center text-[11px]", intensityClass(d.kind, d.rpe))}>

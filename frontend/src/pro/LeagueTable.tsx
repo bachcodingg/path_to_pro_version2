@@ -34,7 +34,7 @@ export function LeagueTable({ tables, highlight, compare, onPick }: { tables: Ta
   return (
     <Card className="overflow-hidden p-0">
       <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-3">
-        <h2 className="font-display text-xl font-bold uppercase">League table</h2>
+        <h2 className="font-display text-xl font-bold">League table</h2>
         <Tabs
           tone="plain"
           label="Matches counted"
@@ -49,7 +49,7 @@ export function LeagueTable({ tables, highlight, compare, onPick }: { tables: Ta
       </div>
       <div className="overflow-x-auto">
         <table aria-label="League table" className="num w-full min-w-[640px] text-sm">
-          <thead className="text-ink-2 border-line border-b text-xs font-bold uppercase">
+          <thead className="text-ink-2 border-line border-b text-xs font-bold">
             <tr>
               <th className="w-12 py-2 pl-4 text-left">Pos</th>
               <th className="py-2 text-left">Club</th>
@@ -143,13 +143,13 @@ export function MiniTable({ rows, highlight, compare, onPick, onMore }: { rows: 
   return (
     <Card className="overflow-hidden p-0">
       <div className="flex items-center justify-between px-4 pt-3 pb-1">
-        <h2 className="font-display text-xl font-bold uppercase">League table</h2>
-        <button className="tap text-pitch-600 text-sm font-semibold hover:underline" onClick={onMore}>
+        <h2 className="font-display text-xl font-bold">League table</h2>
+        <button className="tap text-pitch-300 text-sm font-semibold hover:underline" onClick={onMore}>
           Full table →
         </button>
       </div>
       <table aria-label="League table" className="num w-full text-sm">
-        <thead className="text-ink-2 text-xs font-bold uppercase">
+        <thead className="text-ink-2 text-xs font-bold">
           <tr>
             <th className="w-10 py-1 pl-4 text-left">#</th>
             <th className="py-1 text-left">Club</th>

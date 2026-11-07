@@ -15,7 +15,7 @@ const ZONES = [
   ["box", "Rest of the box"],
   ["out", "Outside the box"],
 ] as const;
-const COLOUR = { goal: "#e3a008", target: "#2f7fe0", other: "rgba(255,255,255,0.55)" };
+const COLOUR = { goal: "var(--color-caution)", target: "var(--color-ready)", other: "rgba(255,255,255,0.55)" };
 
 function zone(x: number, y: number): "six" | "box" | "out" {
   if (x >= 114 && y >= 30 && y <= 50) return "six";
@@ -66,7 +66,7 @@ export function ShotMap({ teamId }: { teamId: string }) {
         <Toggle value={body} options={BODY} onChange={setBody} label="Body part" />
         <Toggle value={sit} options={SITUATION} onChange={setSit} label="Situation" />
       </div>
-      <svg viewBox="-3 -5 86 55" className="w-full rounded-xl" role="img" aria-label={`${shots.length} shots on the attacking half`}>
+      <svg viewBox="-3 -5 86 55" className="w-full rounded-md" role="img" aria-label={`${shots.length} shots on the attacking half`}>
         <rect x={-3} y={-5} width={86} height={55} fill="#1d6b44" />
         <g fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth={0.35}>
           <rect x={0} y={0} width={80} height={60} />
@@ -141,7 +141,7 @@ function Toggle<K extends string>({ value, options, onChange, label }: { value: 
           key={k}
           onClick={() => onChange(k)}
           aria-pressed={value === k}
-          className={cn("tap rounded-lg border border-line px-2.5 py-1 text-xs font-semibold", value === k && "bg-pitch-700 text-white")}
+          className={cn("tap rounded-lg border border-line px-2.5 py-1 text-xs font-semibold", value === k && "bg-pitch-300 text-pitch-950")}
         >
           {options[k]}
         </button>

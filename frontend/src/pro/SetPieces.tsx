@@ -102,7 +102,7 @@ const ZONE_SHORT: Record<string, string> = {
   edge: "Edge of box",
 };
 const FOOT: Record<string, string> = { R: "Right", L: "Left", other: "Other" };
-const RESULT_COLOUR = { goal: "#e3a008", shot: "#2f7fe0", none: "rgba(255,255,255,0.6)" };
+const RESULT_COLOUR = { goal: "var(--color-caution)", shot: "var(--color-ready)", none: "rgba(255,255,255,0.6)" };
 export const pct = (x: number | null | undefined) => (x == null ? "–" : `${Math.round(x)}%`);
 
 export function SetPieces({ teamId }: { teamId: string }) {
@@ -287,14 +287,14 @@ function CornerMap({ points }: { points: Profile["corner_points"] }) {
               key={s}
               onClick={() => setSide(s)}
               aria-pressed={side === s}
-              className={cn("tap rounded-lg border border-line px-2.5 py-1 text-xs font-semibold", side === s && "bg-pitch-700 text-white")}
+              className={cn("tap rounded-lg border border-line px-2.5 py-1 text-xs font-semibold", side === s && "bg-pitch-300 text-pitch-950")}
             >
               {s === "all" ? "All" : s === "L" ? "From left" : "From right"}
             </button>
           ))}
         </div>
       </div>
-      <svg viewBox="-3 -5 86 52" className="w-full rounded-xl" role="img" aria-label={`${shown.length} corner deliveries on the attacking half`}>
+      <svg viewBox="-3 -5 86 52" className="w-full rounded-md" role="img" aria-label={`${shown.length} corner deliveries on the attacking half`}>
         <rect x={-3} y={-5} width={86} height={52} fill="#1d6b44" />
         <g fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth={0.35}>
           <rect x={0} y={0} width={80} height={60} />
@@ -315,7 +315,7 @@ function CornerMap({ points }: { points: Profile["corner_points"] }) {
         <text x={80 - nearX + (side === "L" ? 1 : -1)} y={20.5} fontSize={2} fill="rgba(255,255,255,0.75)" textAnchor={side === "L" ? "start" : "end"}>
           far post
         </text>
-        <circle cx={flagX} cy={0} r={1.2} fill="#e3a008" />
+        <circle cx={flagX} cy={0} r={1.2} fill="var(--color-caution)" />
         {shown.map((pt, i) => (
           <circle key={i} cx={pt.sx} cy={pt.sy} r={pt.result === "none" ? 0.7 : 0.9} fill={RESULT_COLOUR[pt.result]} opacity={0.9} />
         ))}
@@ -345,7 +345,7 @@ export function Legend({ items, extra }: { items: [string, string][]; extra?: st
   );
 }
 
-const KICK_COLOUR: Record<string, string> = { Goal: "#e3a008", Saved: "#2f7fe0", "Saved to Post": "#2f7fe0" };
+const KICK_COLOUR: Record<string, string> = { Goal: "var(--color-caution)", Saved: "var(--color-ready)", "Saved to Post": "var(--color-ready)" };
 
 function KickSection({ title, block, minN, showMinute }: { title: string; block: KickBlock; minN: number; showMinute?: boolean }) {
   const { label } = usePro();
@@ -420,7 +420,7 @@ function GoalMouth({ kicks }: { kicks: Kick[] }) {
   const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
   return (
     <div>
-      <svg viewBox="33 -1.3 14 4.6" className="w-full rounded-xl" role="img" aria-label={`${kicks.length} kicks on the goal mouth`}>
+      <svg viewBox="33 -1.3 14 4.6" className="w-full rounded-md" role="img" aria-label={`${kicks.length} kicks on the goal mouth`}>
         <rect x={33} y={-1.3} width={14} height={4.6} fill="#1d6b44" />
         <rect x={36} y={0} width={8} height={2.67} fill="rgba(255,255,255,0.08)" stroke="#fff" strokeWidth={0.12} />
         <g stroke="rgba(255,255,255,0.35)" strokeWidth={0.05} strokeDasharray="0.2 0.2">
@@ -436,7 +436,7 @@ function GoalMouth({ kicks }: { kicks: Kick[] }) {
             cx={clamp(k.y, 33.3, 46.7)}
             cy={clamp(2.67 - (k.z ?? 0.15), -1.1, 3.1)}
             r={0.22}
-            fill={KICK_COLOUR[k.outcome] ?? "#ea6a12"}
+            fill={KICK_COLOUR[k.outcome] ?? "var(--color-recover)"}
             stroke="#0b2a20"
             strokeWidth={0.04}
           >
@@ -448,7 +448,7 @@ function GoalMouth({ kicks }: { kicks: Kick[] }) {
         items={[
           ["Goal", KICK_COLOUR.Goal],
           ["Saved", KICK_COLOUR.Saved],
-          ["Missed (wide, over, post)", "#ea6a12"],
+          ["Missed (wide, over, post)", "var(--color-recover)"],
         ]}
       />
     </div>

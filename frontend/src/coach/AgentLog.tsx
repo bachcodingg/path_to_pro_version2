@@ -37,9 +37,9 @@ interface LogRow {
 type AgentKey = "monitor" | "planner" | "development_coach" | "coordinator";
 
 const AGENTS: Record<AgentKey, { label: string; icon: LucideIcon; dot: string; text: string }> = {
-  coordinator: { label: "Coordinator", icon: ShieldAlert, dot: "bg-recover text-white", text: "text-recover" },
-  planner: { label: "Planner", icon: CalendarCog, dot: "bg-pitch-600 text-white", text: "text-pitch-600 dark:text-pitch-300" },
-  development_coach: { label: "Development Coach", icon: Target, dot: "bg-pitch-300 text-pitch-950", text: "text-pitch-700 dark:text-pitch-300" },
+  coordinator: { label: "Coordinator", icon: ShieldAlert, dot: "bg-recover text-pitch-950", text: "text-recover" },
+  planner: { label: "Planner", icon: CalendarCog, dot: "bg-pitch-300 text-pitch-950", text: "text-pitch-300" },
+  development_coach: { label: "Development Coach", icon: Target, dot: "bg-pitch-300 text-pitch-950", text: "text-pitch-300" },
   monitor: { label: "Monitor", icon: Eye, dot: "bg-surface border-line text-ink-2 border", text: "text-ink-2" },
 };
 
@@ -149,7 +149,7 @@ export function AgentLog() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <label className="bg-surface border-line tap focus-within:ring-pitch-300 flex min-w-0 flex-1 items-center gap-2 rounded-xl border px-3 focus-within:ring-2 sm:max-w-xs">
+            <label className="bg-surface border-line tap focus-within:ring-pitch-300 flex min-w-0 flex-1 items-center gap-2 rounded-md border px-3 focus-within:ring-2 sm:max-w-xs">
               <Search className="text-ink-2 h-4 w-4 shrink-0" aria-hidden />
               <input
                 type="search"
@@ -160,7 +160,7 @@ export function AgentLog() {
                 onChange={(e) => setQuery(e.target.value)}
               />
             </label>
-            <select aria-label="Decision" className="bg-surface border-line tap rounded-xl border px-3" value={decision} onChange={(e) => setDecision(e.target.value)}>
+            <select aria-label="Decision" className="bg-surface border-line tap rounded-md border px-3" value={decision} onChange={(e) => setDecision(e.target.value)}>
               <option value="">All decisions</option>
               <option value="plan">Week planned</option>
               <option value="coach_approval">Coach approval</option>
@@ -224,7 +224,7 @@ function Run({ rows }: { rows: LogRow[] }) {
                 aria-expanded={showRoutine}
               >
                 <span className="flex-1">
-                  <span className="text-ink-2 text-xs font-bold tracking-wide uppercase">Monitor</span>
+                  <span className="text-ink-2 text-xs font-bold">Monitor</span>
                   <span className="block">
                     Checked <b className="num">{routine.length}</b> player{routine.length === 1 ? "" : "s"}: no change needed
                   </span>
@@ -289,7 +289,7 @@ function Entry({ r, rail }: { r: LogRow; rail?: boolean }) {
       <Card className={cn("p-3", r.decision === "escalate" && "border-l-recover border-l-4")}>
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
           <a.icon className={cn("h-4 w-4", a.text, rail && "sm:hidden")} aria-hidden />
-          <span className={cn("font-bold tracking-wide uppercase", a.text)}>{a.label}</span>
+          <span className={cn("font-bold", a.text)}>{a.label}</span>
           <span className="text-ink-2">·</span>
           <span className="text-sm">
             <PlayerLink player={r.player} />
@@ -377,7 +377,7 @@ function Evidence({ r }: { r: LogRow }) {
       {items.length > 0 && (
         <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
           {items.map(([k, v]) => (
-            <div key={k} className="bg-surface-2 rounded-xl px-3 py-2">
+            <div key={k} className="bg-surface-2 rounded-md px-3 py-2">
               <dt className="text-ink-2 text-xs font-semibold">{k}</dt>
               <dd className="font-display num text-lg leading-tight font-bold">{v}</dd>
             </div>
@@ -392,7 +392,7 @@ function Evidence({ r }: { r: LogRow }) {
       )}
       {rules.length > 0 && (
         <div>
-          <p className="text-ink-2 mb-1.5 text-xs font-semibold uppercase">Rules the solver weighed</p>
+          <p className="text-ink-2 mb-1.5 text-xs font-semibold">Rules the solver weighed</p>
           <ul className="space-y-1.5">
             {rules.map((s) => (
               <li key={s.why} className="flex items-center gap-3">

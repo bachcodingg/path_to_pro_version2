@@ -33,7 +33,7 @@ const POSITIONS = [
   ["winger", "Winger"],
   ["striker", "Striker"],
 ] as const;
-const field = "bg-surface-2 border-line text-ink mt-1 h-11 w-full rounded-xl border px-3 text-[15px]";
+const field = "bg-surface-2 border-line text-ink mt-1 h-11 w-full rounded-md border px-3 text-[15px]";
 type Tab = "teams" | "staff" | "players" | "import";
 
 function message(err: unknown): string {
@@ -77,8 +77,8 @@ export function AdminHome() {
       <div className="bg-pitch-950 flex items-center justify-between px-4 py-2 text-sm text-white md:px-6">
         <span className="flex items-center gap-2">
           <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-7 w-7" />
-          <span className="font-display text-lg font-extrabold tracking-wide uppercase">PathToPro</span>
-          <span className="text-pitch-300 text-xs font-semibold tracking-[0.12em] uppercase">Club admin</span>
+          <span className="brandmark text-lg">PathToPro</span>
+          <span className="text-pitch-300 text-xs font-semibold">Club admin</span>
         </span>
         <span className="flex items-center gap-3">
           <Link to="/account" className="tap text-pitch-200 flex items-center gap-1 hover:text-white">
@@ -154,7 +154,7 @@ function Teams({ ov, act }: { ov: Overview; act: Act }) {
           {ov.squads.map((s) => (
             <li key={s.id}>
               <Card>
-                <p className="font-display text-xl font-bold uppercase">{s.name}</p>
+                <p className="font-display text-xl font-bold">{s.name}</p>
                 <p className="text-ink-2 text-sm">
                   {s.age_group} · {s.players} players · {ov.staff.filter((m) => m.squad_id === s.id).length} staff
                 </p>
@@ -207,7 +207,7 @@ function Staff({ ov, act }: { ov: Overview; act: Act }) {
         <SectionTitle>Staff</SectionTitle>
         <Card className="overflow-x-auto p-0">
           <table className="w-full text-sm">
-            <thead className="text-ink-2 text-left text-xs uppercase">
+            <thead className="text-ink-2 text-left text-xs">
               <tr>
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Role</th>
@@ -350,7 +350,7 @@ function Players({ ov, act, teamName }: { ov: Overview; act: Act; teamName: (id:
         </SectionTitle>
         <Card className="overflow-x-auto p-0">
           <table className="w-full text-sm">
-            <thead className="text-ink-2 text-left text-xs uppercase">
+            <thead className="text-ink-2 text-left text-xs">
               <tr>
                 <th className="px-4 py-2">Player</th>
                 <th className="px-4 py-2">Team</th>

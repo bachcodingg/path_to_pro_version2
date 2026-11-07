@@ -1,41 +1,36 @@
 @import "tailwindcss";
 
-/* Design system (plan 5.4): a night-pitch navy base with one accent colour per role (players
-   teal, staff violet, family pink; see [data-role] below); readiness in blue / amber / orange
-   with icons so colour-blind users can read it; Inter, 16px minimum on mobile.
-   Headings and big numbers in a condensed display face, as football broadcasts and the
-   league websites set them (font-display). */
+/* Design system, "under the floodlights": the app is the overview page's pitch after dark. Each
+   kind of account has its own kit (ground colour) and bib (accent): players green and citron,
+   staff aubergine and lilac, family berry and pink. Readiness keeps its blue / amber / orange,
+   always with icons, and those colours mean nothing else.
+   Anybody (a variable-width face) for headings and numbers, Atkinson Hyperlegible Next for
+   reading, 16px minimum on mobile. */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Barlow Condensed", "Arial Narrow", "Inter", ui-sans-serif, sans-serif;
+  --font-sans: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Anybody", "Arial Narrow", ui-sans-serif, sans-serif;
+  --font-display--font-variation-settings: "wdth" 84;
 
-  /* Readiness only: blue / amber / orange. Buttons never use these, so a colour has one meaning */
-  --color-ready: #2f7fe0;
-  --color-caution: #e3a008;
-  --color-recover: #ea6a12;
+  /* Readiness only. Buttons never use these, so a colour has one meaning. Bright enough to take
+     dark text, which reads better on them than white */
+  --color-ready: #4f9cf9;
+  --color-caution: #f4b92f;
+  --color-recover: #ff8433;
 
   /* Destructive actions (delete account, delete player): a true red, not the readiness orange */
-  --color-danger: #c53030;
+  --color-danger: #d9363e;
 
   /* Results: a letter is always shown too, so the colour is never the only cue */
-  --color-win: #12a150;
-  --color-draw: #8b9893;
-  --color-loss: #d83a3a;
-
-  /* The overview page's news-ticker crawl (the list is doubled, so -50% loops seamlessly) */
-  --animate-marquee: marquee 60s linear infinite;
-  @keyframes marquee {
-    to {
-      transform: translateX(-50%);
-    }
-  }
+  --color-win: #3ecf7a;
+  --color-draw: #9aa89f;
+  --color-loss: #f0605f;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* "pitch" is the brand scale every page uses (bg-pitch-600 buttons, text-pitch-300 accents...).
-   It points at --brand-*, which the signed-in role sets: 50-700 are the role's accent,
-   800-950 the shared navy. "inline" keeps utilities reading the variables at runtime. */
+/* "pitch" is the brand scale every page uses (bg-pitch-300 buttons, text-pitch-300 accents...).
+   It points at --brand-*, which the signed-in role sets: 50-700 are the role's bib, 800-950 the
+   role's ground. "inline" keeps utilities reading the variables at runtime. */
 @theme inline {
   --color-pitch-50: var(--brand-50);
   --color-pitch-100: var(--brand-100);
@@ -50,52 +45,73 @@
   --color-pitch-950: var(--brand-950);
 }
 
-/* Players, and the public pages: teal into cyan */
+/* Players, and the public pages */
 :root {
-  --brand-50: #ecfdf8;
-  --brand-100: #d1faf0;
-  --brand-200: #a5f3e0;
-  --brand-300: #6ee7cf;
-  --brand-400: #2dd4bf;
-  --brand-500: #14b8a6;
-  --brand-600: #0b7a76;
-  --brand-700: #0a625f;
-  --brand-800: #142a4d;
-  --brand-900: #0d1b33;
-  --brand-950: #080f22;
-  --band-end: #0e6660;
-  --tint: #19f5c8; /* neon, a hint of it in the dark backgrounds */
+  --brand-50: #fbfde6;
+  --brand-100: #f5fbc3;
+  --brand-200: #ecf78f;
+  --brand-300: #dcf24a;
+  --brand-400: #c8e326;
+  --brand-500: #a7c411;
+  --brand-600: #7c9309;
+  --brand-700: #5c6e07;
+  --brand-800: #14503a;
+  --brand-900: #0b3024;
+  --brand-950: #06241b;
+  --kit-surface: #103c2e;
+  --kit-surface-2: #0b3024;
+  --kit-line: #2f6450;
+  --kit-ink: #f6f8ee;
+  --kit-ink-2: #bfd1c5;
+  --band-a: #17733f;
+  --band-b: #1c8048;
 }
-/* Staff (coach, physio, club admin): violet */
+/* Staff (coach, physio, club admin) */
 :root[data-role="staff"] {
-  --brand-50: #f5f3ff;
-  --brand-100: #ede9fe;
-  --brand-200: #ddd6fe;
-  --brand-300: #c4b5fd;
-  --brand-400: #a78bfa;
-  --brand-500: #8b5cf6;
-  --brand-600: #7c3aed;
-  --brand-700: #6d28d9;
-  --band-end: #43308f;
-  --tint: #8b5cf6;
+  --brand-50: #f6f3ff;
+  --brand-100: #ece6ff;
+  --brand-200: #dcd2ff;
+  --brand-300: #c9baff;
+  --brand-400: #b09bff;
+  --brand-500: #9278f5;
+  --brand-600: #7a5cdb;
+  --brand-700: #6244c0;
+  --brand-800: #32245f;
+  --brand-900: #211745;
+  --brand-950: #160f33;
+  --kit-surface: #2a1f57;
+  --kit-surface-2: #1e1543;
+  --kit-line: #4a3e85;
+  --kit-ink: #f4f2fb;
+  --kit-ink-2: #c9c3e4;
+  --band-a: #3a2a80;
+  --band-b: #44318f;
 }
-/* Family (guardians): pink, kept well clear of the danger red */
+/* Family (guardians) */
 :root[data-role="family"] {
-  --brand-50: #fdf2f8;
-  --brand-100: #fce7f3;
-  --brand-200: #fbcfe8;
-  --brand-300: #f9a8d4;
-  --brand-400: #f472b6;
-  --brand-500: #e64597;
-  --brand-600: #c0267a;
-  --brand-700: #9c1c63;
-  --band-end: #6d1d55;
-  --tint: #ec4899;
+  --brand-50: #fff1f8;
+  --brand-100: #ffe1f0;
+  --brand-200: #ffc8e4;
+  --brand-300: #ffa9d6;
+  --brand-400: #ff8cc7;
+  --brand-500: #f165ae;
+  --brand-600: #c94a8d;
+  --brand-700: #a43570;
+  --brand-800: #5a1b47;
+  --brand-900: #3a1030;
+  --brand-950: #280a21;
+  --kit-surface: #421437;
+  --kit-surface-2: #2f0e28;
+  --kit-line: #6e3160;
+  --kit-ink: #fbf1f7;
+  --kit-ink-2: #e0c6d8;
+  --band-a: #6d1d55;
+  --band-b: #7a2260;
 }
 
 /* Theme surfaces as real colours, so every utility and variant works with them (bg-ink-2,
    ring-ink, divide-line, bg-surface/60, hover:bg-surface-2...). "inline" keeps them pointing at
-   the variables below, which the .dark class (and the page-header band) redefines. */
+   the variables below, which the .dark class and the paper sheet redefine. */
 @theme inline {
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -104,21 +120,33 @@
   --color-ink-2: var(--ink-2);
 }
 
-:root {
-  --surface: #ffffff;
-  --surface-2: #f3f6fb;
-  --line: #dce3ee;
-  --ink: #0e1a2e;
-  --ink-2: #4b5873;
+/* Paper: the pages before sign-in that are for reading, and anything drawn as a sheet */
+:root,
+.paper {
+  --surface: #fbfbf4;
+  --surface-2: #eff1e6;
+  --line: #cdd5c8;
+  --ink: #0a2a1e;
+  --ink-2: #3f5a4e;
 }
-
-/* Dark navy with a touch of the role's tint, so each kind of account can tell its pages apart */
 .dark {
-  --surface: color-mix(in srgb, var(--tint) 6%, #0f192e);
-  --surface-2: color-mix(in srgb, var(--tint) 5%, #141f38);
-  --line: color-mix(in srgb, var(--tint) 16%, #22304a);
-  --ink: #eef3fb;
-  --ink-2: #a8b4c8;
+  --surface: var(--kit-surface);
+  --surface-2: var(--kit-surface-2);
+  --line: var(--kit-line);
+  --ink: var(--kit-ink);
+  --ink-2: var(--kit-ink-2);
+  color: var(--ink);
+}
+/* A sheet of paper inside a dark page */
+.dark .paper,
+.paper {
+  --surface: #fbfbf4;
+  --surface-2: #eff1e6;
+  --line: #cdd5c8;
+  --ink: #0a2a1e;
+  --ink-2: #3f5a4e;
+  background: var(--surface);
+  color: var(--ink);
 }
 
 html,
@@ -156,7 +184,7 @@ body {
 select:not([multiple]):not(.select-plain) {
   appearance: none;
   padding-right: 2.25rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237d9187' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fb3a7' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.7rem center;
   background-size: 1rem;
@@ -174,147 +202,183 @@ select:not([multiple]):not(.select-plain) {
   outline-offset: 2px;
 }
 
-/* Signed-in page background: the tinted navy, with the role's colour glowing in from two corners */
+/* The wordmark: the face at its widest and heaviest */
+.brandmark {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-variation-settings: "wdth" 116;
+  letter-spacing: -0.01em;
+}
+
+/* Signed-in page background: the role's ground, mown in very faint bands */
 .app-bg {
-  background:
-    radial-gradient(70% 55% at 100% 0%, color-mix(in srgb, var(--tint) 13%, transparent), transparent 70%),
-    radial-gradient(60% 50% at 0% 100%, color-mix(in srgb, var(--tint) 9%, transparent), transparent 70%),
-    var(--surface-2);
-  background-attachment: fixed;
+  background: repeating-linear-gradient(180deg, transparent 0 200px, rgb(255 255 255 / 0.016) 200px 400px), var(--surface-2);
 }
-/* The staff column and phone bar: deep navy, tinted like the page */
+/* The staff column and phone bar */
 .app-rail {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--tint) 8%, #080f22),
-    color-mix(in srgb, var(--tint) 12%, #0d1b33) 600px,
-    color-mix(in srgb, var(--tint) 16%, #142a4d)
-  );
+  background: var(--brand-950);
 }
 
-/* Page header band: navy into the role's colour, mown stripes, and the centre circle chalked
-   faintly on the right */
+/* Page header band: the pitch in daylight, in the role's colour, with mown stripes and the centre
+   circle running off the right edge */
 .hero {
+  --mark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300' fill='none' stroke='%23f7f8f1' stroke-opacity='.3' stroke-width='3'%3E%3Ccircle cx='150' cy='150' r='112'/%3E%3Ccircle cx='150' cy='150' r='5' fill='%23f7f8f1' fill-opacity='.3'/%3E%3Cpath d='M150 0v300'/%3E%3C/svg%3E");
   color: #fff;
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='white' stroke-opacity='0.09' stroke-width='2'%3E%3Ccircle cx='100' cy='100' r='70'/%3E%3Ccircle cx='100' cy='100' r='3' fill='white' fill-opacity='0.12'/%3E%3Cpath d='M100 0v200'/%3E%3C/svg%3E")
-      right -40px center / 240px no-repeat,
-    radial-gradient(110% 160% at 100% 0%, var(--hero-glow, color-mix(in srgb, var(--brand-400) 30%, transparent)), transparent 55%),
-    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.035) 0 56px, transparent 56px 112px),
-    linear-gradient(120deg, #0b1230 0%, #12355a 55%, var(--band-end) 100%);
+    var(--mark) right -150px center / 300px no-repeat,
+    radial-gradient(90% 150% at 100% 0%, var(--hero-glow, transparent), transparent 60%),
+    repeating-linear-gradient(90deg, var(--band-a) 0 84px, var(--band-b) 84px 168px);
+  box-shadow: inset 0 -3px 0 #f7f8f1;
 }
 
-/* Sign-in page: a pitch at night under floodlights, cyan and violet light over the green */
-.login-bg {
-  color: #fff;
-  background:
-    radial-gradient(55% 45% at 100% 0%, rgb(56 189 248 / 0.28), transparent 70%),
-    radial-gradient(45% 40% at 0% 0%, rgb(251 191 36 / 0.14), transparent 70%),
-    radial-gradient(60% 55% at 0% 100%, rgb(139 92 246 / 0.28), transparent 70%),
-    radial-gradient(70% 55% at 75% 100%, rgb(16 185 129 / 0.24), transparent 70%),
-    linear-gradient(160deg, #0a0f24 0%, #0c1a2e 50%, #08231d 100%);
+/* A sheet of turf inside a page: no centre mark to run under the content, and the hard shadow
+   of anything lying on the pitch */
+.hero.turf-sheet {
+  --mark: none;
+  border-radius: 10px;
+  box-shadow: 8px 10px 0 rgb(2 18 12 / 0.45);
 }
-/* The band behind the headline: mown-pitch stripes over navy into teal, with a gradient edge
-   below it (beside it on a laptop, where the band is the left column) */
+
+/* Today: the player's morning, on the pitch */
+.today-hero {
+  padding: 1.25rem 1.1rem 1.4rem;
+}
+@media (min-width: 768px) {
+  .today-hero {
+    padding: 1.6rem 1.75rem 1.7rem;
+  }
+}
+.display-headings .today-hero h1 {
+  font-size: clamp(2.7rem, 7vw, 4.3rem);
+  font-weight: 900;
+  font-variation-settings: "wdth" 96;
+  line-height: 0.98;
+}
+
+/* Readiness as a bank of lamps: twenty cells on a dark board, with a battery's terminal */
+.led-battery {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 3px;
+  height: 3.6rem;
+  margin-right: 0.6rem;
+  padding: 6px;
+  border-radius: 6px;
+  background: #020f0b;
+}
+.led-battery::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -0.55rem;
+  width: 0.55rem;
+  height: 1.5rem;
+  border-radius: 0 3px 3px 0;
+  background: #020f0b;
+  transform: translateY(-50%);
+}
+@layer components {
+  .led-battery > span {
+    border-radius: 1.5px;
+    background: rgb(255 255 255 / 0.1);
+  }
+}
+
+/* A training bib */
+[data-bib="player"] {
+  --bib: #dcf24a;
+}
+[data-bib="coach"] {
+  --bib: #c9baff;
+}
+[data-bib="family"] {
+  --bib: #ffa9d6;
+}
+[data-bib="physio"] {
+  --bib: #f7f8f1;
+}
+.bib-shape {
+  display: block;
+  width: 100%;
+  filter: drop-shadow(4px 6px 0 rgb(2 18 12 / 0.4));
+}
+.bib-shape path:first-child {
+  fill: var(--bib);
+}
+.bib-trim {
+  fill: none;
+  stroke: rgb(10 42 30 / 0.45);
+  stroke-width: 2;
+}
+.bib-shape text {
+  fill: #0a2a1e;
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 900;
+  font-variation-settings: "wdth" 76;
+}
+
+/* Sign-in: the same turf as the overview page */
+.login-bg {
+  color: #f7f8f1;
+  background: var(--brand-950);
+}
 .login-band {
   position: relative;
+  overflow: hidden;
   background:
-    radial-gradient(90% 140% at 100% 0%, rgb(56 189 248 / 0.32), transparent 60%),
-    radial-gradient(60% 90% at 0% 100%, rgb(139 92 246 / 0.22), transparent 70%),
-    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.045) 0 56px, transparent 56px 112px),
-    linear-gradient(120deg, #0b1230 0%, #12355a 50%, #0e6660 100%);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85 1.7' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .02 0 0 0 0 .2 0 0 0 0 .1 0 0 0 .55 -.14'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23g)'/%3E%3C/svg%3E"),
+    linear-gradient(112deg, rgb(4 40 24 / 0.46) 0 16%, transparent 16.1%),
+    repeating-linear-gradient(180deg, #17733f 0 170px, #1c8048 170px 340px);
 }
-.login-band::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 3px;
-  background: linear-gradient(90deg, #6ee7b7, #67e8f9, #c4b5fd);
+/* The penalty box drawn round the headline */
+.login-box {
+  position: relative;
+  padding: 1.75rem 1.25rem 2.25rem;
+  border: 3px solid #f7f8f1;
+  border-bottom: 0;
 }
 @media (min-width: 1024px) {
-  .login-band::after {
-    inset: 0 0 0 auto;
-    width: 3px;
-    height: auto;
-    background: linear-gradient(180deg, #6ee7b7, #67e8f9, #c4b5fd);
+  .login-box {
+    padding: 2.25rem 2.25rem 2.75rem;
   }
 }
-
-/* A thin white layer over a button: a hairline edge and a soft gloss on the top half */
-.btn-gloss,
-.glass-btn {
-  position: relative;
-  overflow: hidden;
+.login-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.9rem, 7vw, 5.4rem);
+  font-weight: 900;
+  font-variation-settings: "wdth" 86;
+  line-height: 0.96;
 }
-.btn-gloss::before,
-.glass-btn::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
+.login-sheet {
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 10px 13px 0 rgb(2 18 12 / 0.55);
 }
-.btn-gloss::before {
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.38) 0%, rgb(255 255 255 / 0.1) 48%, transparent 52%);
-  box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 0.55),
-    inset 0 1px 0 rgb(255 255 255 / 0.9);
+.login-field {
+  margin-top: 0.25rem;
+  height: 3rem;
+  width: 100%;
+  border: 2px solid #8fa397;
+  border-radius: 6px;
+  background: #fff;
+  color: #0a2a1e;
+  padding-inline: 0.75rem;
+  outline: none;
 }
-.glass-btn::before {
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.1), transparent 50%);
-  box-shadow:
-    inset 0 0 0 1px rgb(255 255 255 / 0.12),
-    inset 0 1px 0 rgb(255 255 255 / 0.32);
-}
-
-/* A set piece drawn on the night pitch behind the form, as on a coach's tactics board */
-.login-tactics {
-  position: absolute;
-  right: 3%;
-  bottom: 14%;
-  width: min(34vw, 340px);
-  color: rgb(255 255 255 / 0.14);
-}
-
-/* A floodlight beam from a top corner, swaying slowly */
-.login-beam {
-  position: absolute;
-  top: -10vmax;
-  width: 70vmax;
-  height: 110vmax;
-  transform-origin: 50% 0;
-  background: conic-gradient(from 165deg at 50% 0%, transparent 0deg, rgb(255 255 255 / 0.08) 15deg, transparent 30deg);
-  filter: blur(10px);
-  transform: rotate(var(--r));
-  animation: beam-sway 14s ease-in-out infinite alternate;
-}
-@keyframes beam-sway {
-  to {
-    transform: rotate(calc(var(--r) * 0.75));
-  }
-}
-/* Pitch markings lying flat in the distance, fading towards the top */
-.login-pitch {
-  position: absolute;
-  bottom: -6%;
-  left: 50%;
-  width: min(1400px, 160%);
-  color: rgb(255 255 255 / 0.09);
-  transform: translateX(-50%) perspective(900px) rotateX(60deg);
-  transform-origin: 50% 100%;
-  mask-image: linear-gradient(to top, black 30%, transparent 95%);
-}
-@media (prefers-reduced-motion: reduce) {
-  .login-beam {
-    animation: none;
-  }
+.login-field:focus-visible {
+  border-color: #0a2a1e;
+  outline: 3px solid #1b7f4b;
+  outline-offset: 1px;
 }
 
 /* Form controls and secondary text placed on the band */
 .hero select,
 .hero input:not([type="range"]) {
-  background-color: rgb(255 255 255 / 0.1);
-  border-color: rgb(255 255 255 / 0.25);
+  background-color: rgb(4 34 22 / 0.5);
+  border-color: rgb(255 255 255 / 0.45);
   color: #fff;
 }
 .hero select option {
@@ -322,16 +386,16 @@ select:not([multiple]):not(.select-plain) {
   color: #102119;
 }
 .hero .text-ink-2 {
-  color: rgb(255 255 255 / 0.75);
+  color: #fff;
 }
 
 /* Player and family apps: page titles in the display face, as the staff band sets them */
 .display-headings h1 {
   font-family: var(--font-display);
   font-size: 2.1rem;
+  font-weight: 800;
+  font-variation-settings: "wdth" 80;
   line-height: 1.02;
-  letter-spacing: 0.005em;
-  text-transform: uppercase;
 }
 
 .num {
@@ -340,7 +404,7 @@ select:not([multiple]):not(.select-plain) {
 
 /* Loading placeholders in the shape of the content */
 .skeleton {
-  border-radius: 0.75rem;
+  border-radius: 6px;
   background: linear-gradient(90deg, var(--line) 0%, var(--surface-2) 50%, var(--line) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;

@@ -10,7 +10,8 @@
     "test": "vitest run src",
     "lint": "tsc -b --noEmit",
     "build:demo": "node scripts/build-demo.mjs",
-    "test:demo": "playwright test -c playwright.demo.config.ts"
+    "test:demo": "playwright test -c playwright.demo.config.ts",
+    "compare": "node compare/run.mjs"
   },
   "dependencies": {
     "class-variance-authority": "0.7.1",

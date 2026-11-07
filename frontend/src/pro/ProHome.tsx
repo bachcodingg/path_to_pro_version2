@@ -31,7 +31,7 @@ export function ProHome() {
               <div className="space-y-2 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h2 className="font-display text-2xl leading-tight font-bold uppercase">{c.name}</h2>
+                    <h2 className="font-display text-2xl leading-tight font-bold">{c.name}</h2>
                     <p className="text-ink-2 text-sm font-semibold">{c.season}</p>
                   </div>
                   <Chip tone={c.coverage === "league" ? "green" : "amber"}>{COVERAGE[c.coverage]}</Chip>
@@ -47,7 +47,7 @@ export function ProHome() {
                       </>
                     )}
                   </span>
-                  <ArrowRight className="text-pitch-600 h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden />
+                  <ArrowRight className="text-pitch-300 h-5 w-5 transition-transform group-hover:translate-x-1" aria-hidden />
                 </p>
               </div>
             </Card>

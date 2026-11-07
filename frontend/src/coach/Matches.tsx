@@ -68,7 +68,7 @@ export function Matches() {
                   className="hover:bg-surface-2 grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-3 px-4 py-3 transition-colors md:grid-cols-[4rem_minmax(0,1fr)_13rem]"
                 >
                   <span className="text-center leading-none">
-                    <span className="text-ink-2 block text-[11px] font-bold uppercase">
+                    <span className="text-ink-2 block text-[11px] font-bold">
                       {fmtDay(m.date)}
                     </span>
                     <span className="font-display block text-3xl font-bold">
@@ -82,7 +82,7 @@ export function Matches() {
                     </span>
                     <span className="flex flex-col items-center">
                       <RatingBadge value={m.avg_rating} />
-                      <span className="text-ink-2 mt-0.5 text-[10px] font-semibold uppercase">
+                      <span className="text-ink-2 mt-0.5 text-[10px] font-semibold">
                         avg
                       </span>
                     </span>
@@ -96,7 +96,7 @@ export function Matches() {
                   </span>
                   {m.best && (
                     <span className="hidden text-right text-xs md:block">
-                      <span className="text-ink-2 block font-semibold uppercase">
+                      <span className="text-ink-2 block font-semibold">
                         Player of the match
                       </span>
                       <span className="font-semibold">
@@ -283,8 +283,8 @@ export function MatchReport() {
         }
         actions={
           top && (
-            <span className="rounded-xl bg-white/10 px-3 py-2 text-sm">
-              <span className="block text-xs font-bold tracking-wider text-white/70 uppercase">
+            <span className="rounded-md bg-white/10 px-3 py-2 text-sm">
+              <span className="block text-xs font-bold text-white/95">
                 Player of the match
               </span>
               <span className="font-semibold">

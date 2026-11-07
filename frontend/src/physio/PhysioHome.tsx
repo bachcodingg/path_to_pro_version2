@@ -54,7 +54,7 @@ export function PhysioHome() {
           queue.data && (
             <span className="text-right">
               <span className="font-display block text-4xl leading-none font-bold">{queue.data.length}</span>
-              <span className="text-xs font-semibold tracking-wider text-white/70 uppercase">waiting</span>
+              <span className="text-xs font-semibold text-white/95">waiting</span>
             </span>
           )
         }
@@ -69,7 +69,7 @@ export function PhysioHome() {
               <li key={e.id}>
                 <Card className="border-recover/50 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <p className="text-recover text-xs font-bold uppercase">{e.text}</p>
+                    <p className="text-recover text-xs font-bold">{e.text}</p>
                     <Link to={`/coach/players/${e.player.id}`} className="text-lg font-bold hover:underline">
                       {e.player.name}
                     </Link>

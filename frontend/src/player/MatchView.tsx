@@ -23,13 +23,13 @@ export function MatchView() {
         ← My career
       </Link>
       {/* Match-centre header: both badges either side of the date */}
-      <div className="bg-surface border-line rounded-2xl border p-4">
+      <div className="bg-surface border-line rounded-[10px] border p-4">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center">
           <span className="flex flex-col items-center gap-1.5">
             <Crest name={data.match.team} size={44} />
             <span className="text-sm leading-tight font-semibold">{data.match.team}</span>
           </span>
-          <span className="font-display text-2xl font-bold text-ink-2 uppercase">vs</span>
+          <span className="font-display text-2xl font-bold text-ink-2">vs</span>
           <span className="flex flex-col items-center gap-1.5">
             <Crest name={data.match.opponent} size={44} />
             <span className="text-sm leading-tight font-semibold">{data.match.opponent}</span>

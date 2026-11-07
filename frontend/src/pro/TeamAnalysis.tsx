@@ -128,10 +128,10 @@ export function TeamAnalysis() {
         }
         bottom={
           <>
-            {!league && c && <p className="mb-3 max-w-3xl text-sm text-white/80">{c.note}</p>}
+            {!league && c && <p className="mb-3 max-w-3xl text-sm text-white/95">{c.note}</p>}
             {versus && (
-              <p className="mb-3 flex flex-wrap items-center gap-2 text-sm text-white/80">
-                <span className="font-display text-base font-bold tracking-wide text-white uppercase">vs</span>
+              <p className="mb-3 flex flex-wrap items-center gap-2 text-sm text-white/95">
+                <span className="font-display text-base font-bold text-white">vs</span>
                 <Crest name={versus.team} size={22} />
                 <span className="font-semibold text-white">{versus.team}</span>
                 {versus.standing.position != null && `${ordinal(versus.standing.position)}, `}

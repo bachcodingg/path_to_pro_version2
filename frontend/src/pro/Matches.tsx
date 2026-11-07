@@ -215,9 +215,9 @@ function StatBar({ s }: { s: Stat }) {
   return (
     <div>
       <div className="flex items-baseline justify-between text-sm">
-        <span className={cn("num w-14 font-bold", better === "home" && "text-pitch-700")}>{fmt(s, s.home)}</span>
+        <span className={cn("num w-14 font-bold", better === "home" && "text-pitch-300")}>{fmt(s, s.home)}</span>
         <span className="text-ink-2 text-center text-xs font-semibold">{s.label}</span>
-        <span className={cn("num w-14 text-right font-bold", better === "away" && "text-pitch-700")}>{fmt(s, s.away)}</span>
+        <span className={cn("num w-14 text-right font-bold", better === "away" && "text-pitch-300")}>{fmt(s, s.away)}</span>
       </div>
       <div className="mt-1 flex h-2 gap-1" aria-hidden>
         <span className="bg-surface-2 flex flex-1 justify-end overflow-hidden rounded-full">

@@ -50,12 +50,12 @@ export function Gym() {
       <TrainingSwitch active="gym" />
 
       <Card>
-        <p className="text-ink-2 text-xs font-semibold uppercase">Your position</p>
+        <p className="text-ink-2 text-xs font-semibold">Your position</p>
         {selfGuided ? (
           <label className="mt-1 block">
             <span className="sr-only">Position</span>
             <select
-              className="bg-surface-2 border-line h-11 w-full rounded-xl border px-3 font-bold"
+              className="bg-surface-2 border-line h-11 w-full rounded-md border px-3 font-bold"
               value={data.position}
               onChange={(e) => changePosition(e.target.value as Position)}
             >

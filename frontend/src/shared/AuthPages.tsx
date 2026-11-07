@@ -121,7 +121,7 @@ export function SetPassword() {
           <p role="alert" className="text-recover font-medium">
             {linkError}
           </p>
-          <Link to="/forgot-password" className="text-pitch-600 font-semibold underline">
+          <Link to="/forgot-password" className="text-pitch-300 font-semibold underline">
             Ask for a new link
           </Link>
         </div>

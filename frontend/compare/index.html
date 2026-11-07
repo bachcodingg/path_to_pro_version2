@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PathToPro: before and after</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,400..900&family=Atkinson+Hyperlegible+Next:wght@400..800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #17191a;
+    --bar: #222527;
+    --line: #3a3f42;
+    --text: #f2f3ee;
+    --muted: #b5bbb8;
+    --new: #dcf24a;
+    --old: #8fb4ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.35 "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  }
+  button, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--new); outline-offset: 2px; }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.1rem;
+    padding: 0.5rem 0.9rem;
+    background: var(--bar);
+    border-bottom: 1px solid var(--line);
+  }
+  .name {
+    margin: 0 0.4rem 0 0;
+    font: 900 1.02rem "Anybody", sans-serif;
+    font-variation-settings: "wdth" 112;
+  }
+  .scene { display: flex; align-items: center; gap: 0.3rem; }
+  .scene select {
+    height: 38px;
+    max-width: 19rem;
+    padding: 0 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--bg);
+    font-weight: 700;
+  }
+  .step {
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--bg);
+    font-size: 1.05rem;
+    cursor: pointer;
+  }
+  .group { display: flex; align-items: center; gap: 0.4rem; }
+  .group > span { color: var(--muted); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+  .seg button {
+    height: 36px;
+    padding: 0 0.7rem;
+    border: 0;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); font-weight: 800; }
+  .check { display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; }
+  .check input { width: 17px; height: 17px; accent-color: var(--new); }
+  .spacer { flex: 1; }
+  .hint { color: var(--muted); font-size: 13.5px; }
+  kbd { padding: 0 0.3rem; border: 1px solid var(--line); border-radius: 3px; font: inherit; }
+
+  #stage { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+  .pane { position: absolute; overflow: hidden; background: #000; }
+  .pane iframe { display: block; border: 0; background: #fff; transform-origin: 0 0; }
+  .tag {
+    position: absolute;
+    z-index: 3;
+    top: 8px;
+    left: 8px;
+    padding: 0.1rem 0.55rem;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 14px;
+    color: #111;
+    pointer-events: none;
+  }
+  .tag.old { background: var(--old); }
+  .tag.new { background: var(--new); }
+
+  #handle {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    bottom: 0;
+    width: 36px;
+    margin-left: -18px;
+    cursor: ew-resize;
+    touch-action: none;
+    display: none;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  #handle::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 16.5px;
+    width: 3px;
+    background: var(--new);
+  }
+  #handle::after {
+    content: "\2194";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    margin-top: -18px;
+    border-radius: 50%;
+    background: var(--new);
+    color: #111;
+    font: 800 20px/36px sans-serif;
+    text-align: center;
+  }
+  #shield { position: absolute; inset: 0; z-index: 4; display: none; cursor: ew-resize; }
+  body.swipe #handle { display: block; }
+  body.dragging #shield { display: block; }
+</style>
+</head>
+<body>
+  <header class="bar">
+    <h1 class="name">PathToPro: before and after</h1>
+    <div class="scene">
+      <button class="step" id="prev" aria-label="Previous page" title="Previous page">&#8249;</button>
+      <select id="scene" aria-label="Page to compare"></select>
+      <button class="step" id="next" aria-label="Next page" title="Next page">&#8250;</button>
+    </div>
+    <div class="group">
+      <span id="viewLabel">View</span>
+      <div class="seg" role="group" aria-labelledby="viewLabel" id="views">
+        <button data-view="side">Side by side</button>
+        <button data-view="swipe">Swipe</button>
+        <button data-view="flip">Flip</button>
+      </div>
+    </div>
+    <div class="group">
+      <span id="deviceLabel">Screen</span>
+      <div class="seg" role="group" aria-labelledby="deviceLabel" id="devices">
+        <button data-device="desktop">Laptop</button>
+        <button data-device="phone">Phone</button>
+      </div>
+    </div>
+    <label class="check"><input type="checkbox" id="syncScroll" checked /> Scroll together</label>
+    <span class="spacer"></span>
+    <span class="hint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> pages, <kbd>F</kbd> flip</span>
+  </header>
+  <main id="stage">
+    <div class="pane" id="oldPane"><span class="tag old">Before</span><iframe id="oldFrame" title="The design before"></iframe></div>
+    <div class="pane" id="newPane"><span class="tag new">After</span><iframe id="newFrame" title="The redesign"></iframe></div>
+    <button id="handle" aria-label="Move the divider"></button>
+    <div id="shield"></div>
+  </main>
+
+<script>
+  // Both builds share this origin, so one demo token signs both frames in and the page can follow
+  // each frame's route and scroll.
+  const TOKEN = "pathtopro.token";
+  const P = "p15@demo.pathtopro", C = "coach@demo.pathtopro", S = "physio@demo.pathtopro", F = "guardian02@demo.pathtopro";
+  const SCENES = [
+    ["Before sign-in", null, [["Overview page", "/"], ["Sign in", "/login"], ["Create a free plan", "/register"]]],
+    ["Player: Leon, U15", P, [["Today", "/player"], ["My week", "/player/week"], ["My card", "/player/card"], ["Growth", "/player/growth"], ["Career", "/player/career"], ["Ball skills", "/player/skills"], ["Road to Pro", "/player/road"]]],
+    ["Coach", C, [["Dressing room", "/coach"], ["Substitution board", "/coach/inbox"], ["Training pitch", "/coach/pitch"], ["Tactics board", "/coach/tactics"], ["Match commentary", "/coach/log"], ["Club finances", "/coach/finance"]]],
+    ["Physio and family", null, [["Physio queue", "/physio", S], ["Family home", "/guardian", F]]],
+    ["Pro leagues", P, [["All competitions", "/pro"], ["La Liga", "/pro/la-liga"]]],
+  ].flatMap(([group, account, items]) => items.map(([label, path, own]) => ({ group, label, path, account: own ?? account })));
+
+  const $ = (id) => document.getElementById(id);
+  const frames = { old: $("oldFrame"), new: $("newFrame") };
+  const panes = { old: $("oldPane"), new: $("newPane") };
+  const DEVICES = { desktop: { w: 1440, h: 900 }, phone: { w: 390, h: 844 } };
+
+  let state = { scene: 0, view: innerWidth < 900 ? "flip" : "side", device: "desktop", shown: "new", split: 0.5 };
+  try {
+    state = { ...state, ...JSON.parse(localStorage.getItem("compare.view") ?? "{}") };
+  } catch {}
+  const hashScene = SCENES.findIndex((s) => "#" + s.path === location.hash);
+  if (hashScene >= 0) state.scene = hashScene;
+
+  function save() {
+    try {
+      localStorage.setItem("compare.view", JSON.stringify({ view: state.view, device: state.device, scene: state.scene }));
+    } catch {}
+  }
+
+  // Scene picker
+  let optgroup;
+  SCENES.forEach((s, i) => {
+    if (!optgroup || optgroup.label !== s.group) {
+      optgroup = document.createElement("optgroup");
+      optgroup.label = s.group;
+      $("scene").append(optgroup);
+    }
+    optgroup.append(new Option(s.label, i));
+  });
+
+  function go(i) {
+    state.scene = (i + SCENES.length) % SCENES.length;
+    const s = SCENES[state.scene];
+    $("scene").value = state.scene;
+    history.replaceState(null, "", "#" + s.path);
+    save();
+    if (s.account) localStorage.setItem(TOKEN, "demo:" + s.account);
+    else localStorage.removeItem(TOKEN);
+    knownToken = localStorage.getItem(TOKEN);
+    last.old = last.new = s.path;
+    frames.old.src = "/old" + s.path;
+    frames.new.src = "/new" + s.path;
+  }
+
+  // Layout -------------------------------------------------------------------------------------
+  function layout() {
+    const stage = $("stage").getBoundingClientRect();
+    const d = DEVICES[state.device];
+    const gap = 6;
+    document.body.classList.toggle("swipe", state.view === "swipe");
+    for (const b of document.querySelectorAll("#views button")) b.setAttribute("aria-pressed", b.dataset.view === state.view);
+    for (const b of document.querySelectorAll("#devices button")) b.setAttribute("aria-pressed", b.dataset.device === state.device);
+
+    const place = (side, x, y, w, h, scale) => {
+      const pane = panes[side];
+      Object.assign(pane.style, { left: x + "px", top: y + "px", width: w + "px", height: h + "px" });
+      const f = frames[side];
+      f.style.width = d.w + "px";
+      f.style.height = Math.ceil(h / scale) + "px";
+      f.style.transform = `scale(${scale})`;
+    };
+
+    panes.old.style.clipPath = panes.new.style.clipPath = "";
+    panes.old.style.display = panes.new.style.display = "";
+    panes.old.style.zIndex = panes.new.style.zIndex = 1;
+
+    if (state.view === "side") {
+      const w = (stage.width - gap) / 2;
+      if (state.device === "desktop") {
+        const scale = w / d.w;
+        place("old", 0, 0, w, stage.height, scale);
+        place("new", w + gap, 0, w, stage.height, scale);
+      } else {
+        const scale = Math.min(1, stage.height / d.h, w / d.w);
+        const pw = d.w * scale;
+        const ph = d.h * scale;
+        place("old", w / 2 - pw / 2, 0, pw, ph, scale);
+        place("new", w + gap + w / 2 - pw / 2, 0, pw, ph, scale);
+      }
+    } else {
+      const scale = state.device === "desktop" ? stage.width / d.w : Math.min(1, stage.height / d.h);
+      const pw = d.w * scale;
+      const ph = state.device === "desktop" ? stage.height : d.h * scale;
+      const x = (stage.width - pw) / 2;
+      place("old", x, 0, pw, ph, scale);
+      place("new", x, 0, pw, ph, scale);
+      if (state.view === "flip") {
+        panes[state.shown === "new" ? "old" : "new"].style.display = "none";
+      } else {
+        panes.new.style.zIndex = 2;
+        panes.new.style.clipPath = `inset(0 0 0 ${state.split * 100}%)`;
+        $("handle").style.left = x + pw * state.split + "px";
+      }
+    }
+  }
+
+  // Swipe divider
+  function moveSplit(clientX) {
+    const r = panes.old.getBoundingClientRect();
+    state.split = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+    layout();
+  }
+  $("handle").addEventListener("pointerdown", (e) => {
+    document.body.classList.add("dragging");
+    $("handle").setPointerCapture(e.pointerId);
+  });
+  $("handle").addEventListener("pointermove", (e) => {
+    if (document.body.classList.contains("dragging")) moveSplit(e.clientX);
+  });
+  $("handle").addEventListener("pointerup", () => document.body.classList.remove("dragging"));
+  $("handle").addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.stopPropagation();
+      state.split = Math.min(1, Math.max(0, state.split + (e.key === "ArrowLeft" ? -0.05 : 0.05)));
+      layout();
+    }
+  });
+
+  // Frames follow each other --------------------------------------------------------------------
+  const last = { old: "", new: "" };
+  let knownToken = null;
+  const routeOf = (side) => {
+    try {
+      const l = frames[side].contentWindow.location;
+      return l.pathname.replace(new RegExp("^/" + side), "") + l.search || "/";
+    } catch {
+      return null;
+    }
+  };
+  setInterval(() => {
+    // Signed in or out inside a frame: the other frame has to catch up
+    const token = localStorage.getItem(TOKEN);
+    if (token !== knownToken) {
+      knownToken = token;
+      for (const side of ["old", "new"]) {
+        const route = routeOf(side);
+        if (route !== null) last[side] = "";
+      }
+    }
+    for (const [side, other] of [["old", "new"], ["new", "old"]]) {
+      const route = routeOf(side);
+      if (route === null || route === "/about:blank") continue;
+      if (route !== last[side]) {
+        const first = last[side] === "";
+        last[side] = route;
+        if (routeOf(other) !== route && !first) {
+          last[other] = route;
+          const win = frames[other].contentWindow;
+          win.history.pushState(null, "", "/" + other + route);
+          win.dispatchEvent(new PopStateEvent("popstate"));
+        } else if (first && routeOf(other) !== route) {
+          last[other] = route;
+          frames[other].src = "/" + other + route;
+        }
+      }
+    }
+  }, 350);
+
+  // Scroll together, by share of the page, since the two designs differ in length
+  let leader = null;
+  let release = 0;
+  function follow(side, other) {
+    if (!$("syncScroll").checked) return;
+    if (leader && leader !== side) return;
+    leader = side;
+    clearTimeout(release);
+    release = setTimeout(() => (leader = null), 140);
+    try {
+      const a = frames[side].contentWindow;
+      const b = frames[other].contentWindow;
+      const share = a.scrollY / Math.max(1, a.document.documentElement.scrollHeight - a.innerHeight);
+      b.scrollTo({ top: share * (b.document.documentElement.scrollHeight - b.innerHeight), behavior: "instant" });
+    } catch {}
+  }
+  for (const [side, other] of [["old", "new"], ["new", "old"]]) {
+    frames[side].addEventListener("load", () => {
+      frames[side].contentWindow.addEventListener("scroll", () => follow(side, other), { passive: true });
+      frames[side].contentWindow.addEventListener("keydown", onKey);
+    });
+  }
+
+  // Controls -------------------------------------------------------------------------------------
+  function flip() {
+    if (state.view !== "flip") state.view = "flip";
+    else state.shown = state.shown === "new" ? "old" : "new";
+    layout();
+    save();
+  }
+  function onKey(e) {
+    const tag = e.target?.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === "ArrowRight") go(state.scene + 1);
+    else if (e.key === "ArrowLeft") go(state.scene - 1);
+    else if (e.key.toLowerCase() === "f") flip();
+  }
+  addEventListener("keydown", onKey);
+  $("scene").addEventListener("change", (e) => go(Number(e.target.value)));
+  $("prev").addEventListener("click", () => go(state.scene - 1));
+  $("next").addEventListener("click", () => go(state.scene + 1));
+  $("views").addEventListener("click", (e) => {
+    const v = e.target.dataset.view;
+    if (v) {
+      state.view = v;
+      layout();
+      save();
+    }
+  });
+  $("devices").addEventListener("click", (e) => {
+    const v = e.target.dataset.device;
+    if (v) {
+      state.device = v;
+      layout();
+      save();
+    }
+  });
+  addEventListener("resize", layout);
+
+  layout();
+  go(state.scene);
+</script>
+</body>
+</html>

@@ -66,7 +66,7 @@ export function Overview({ p, vs, table, onPick, onTable }: { p: StyleProfile; v
 function Summary({ title, tone, items, empty }: { title: string; tone: string; items: string[]; empty: string }) {
   return (
     <Card className="border-t-4" style={{ borderTopColor: tone }}>
-      <h3 className="font-display mb-2 text-xl font-bold uppercase">{title}</h3>
+      <h3 className="font-display mb-2 text-xl font-bold">{title}</h3>
       {items.length ? (
         <ul className="space-y-1.5 text-sm">
           {items.map((i) => (
