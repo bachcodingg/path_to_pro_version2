@@ -108,6 +108,27 @@
   --band-a: #6d1d55;
   --band-b: #7a2260;
 }
+/* The Pro League app: night-match navy and floodlight blue, on cool white paper */
+:root[data-role="leagues"] {
+  --brand-50: #eef9ff;
+  --brand-100: #d8f1ff;
+  --brand-200: #b3e5ff;
+  --brand-300: #5ad1ff;
+  --brand-400: #2fb8f0;
+  --brand-500: #1597d0;
+  --brand-600: #0d76a8;
+  --brand-700: #0c5d86;
+  --brand-800: #16295a;
+  --brand-900: #11234f;
+  --brand-950: #0c1a3d;
+  --kit-surface: #16295a;
+  --kit-surface-2: #11234f;
+  --kit-line: #2e4682;
+  --kit-ink: #f3f6fd;
+  --kit-ink-2: #c3cde6;
+  --band-a: #11234f;
+  --band-b: #16295a;
+}
 
 /* Theme surfaces as real colours, so every utility and variant works with them (bg-ink-2,
    ring-ink, divide-line, bg-surface/60, hover:bg-surface-2...). "inline" keeps them pointing at
@@ -128,6 +149,14 @@
   --line: #cdd5c8;
   --ink: #0a2a1e;
   --ink-2: #3f5a4e;
+}
+:root[data-role="leagues"],
+:root[data-role="leagues"] .paper {
+  --surface: #ffffff;
+  --surface-2: #f4f6fb;
+  --line: #d3d9e8;
+  --ink: #0c1a3d;
+  --ink-2: #46557a;
 }
 .dark {
   --surface: var(--kit-surface);

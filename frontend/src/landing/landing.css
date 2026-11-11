@@ -1352,6 +1352,65 @@
   }
 }
 
+/* The two apps, side by side like icons on a home screen ---------------------------------- */
+.lp-apps {
+  display: grid;
+  gap: 1.25rem;
+  margin: 2.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .lp-apps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+}
+.lp-apps li {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.2rem;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--sun-shadow);
+}
+.lp-apps li.is-leagues {
+  background: #0c1a3d;
+  color: var(--chalk);
+}
+.lp-apps img {
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 1.1rem;
+  box-shadow: 4px 6px 0 rgb(4 44 26 / 0.3);
+}
+.lp-apps h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 800;
+  font-variation-settings: "wdth" 84;
+  line-height: 1.05;
+}
+.lp-apps p {
+  margin: 0.35rem 0 0;
+  font-size: 0.97rem;
+  line-height: 1.4;
+}
+.lp-apps-go {
+  display: inline-block;
+  margin-top: 0.8rem;
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+.lp-apps .is-leagues .lp-apps-go {
+  color: #5ad1ff;
+}
+
 /* League table ------------------------------------------------------------------------------- */
 .lp-table {
   margin: 2.5rem 0 0;

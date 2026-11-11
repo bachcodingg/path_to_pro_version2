@@ -49,7 +49,7 @@ export function Results({ data }: { data: MatchList }) {
             {list.map((m) => (
               <Link
                 key={m.id}
-                to={`/pro/${comp}/matches/${m.id}`}
+                to={`/${comp}/matches/${m.id}`}
                 aria-label={`${m.home} ${m.home_goals}-${m.away_goals} ${m.away}${m.date ? `, ${day(m.date)}` : ""}`}
                 className="hover:bg-surface-2 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-4 py-2.5 transition-colors"
               >
@@ -122,7 +122,7 @@ export function MatchCentre() {
       <PageHeader
         accent={COMP_COLOR[comp]}
         eyebrow={
-          <Link to={`/pro/${comp}?tab=results`} className="hover:underline">
+          <Link to={`/${comp}?tab=results`} className="hover:underline">
             ← {data.competition.name} {data.competition.season}
             {data.week && data.competition.coverage !== "finals" ? ` · matchday ${data.week}` : ""}
           </Link>
@@ -215,9 +215,9 @@ function StatBar({ s }: { s: Stat }) {
   return (
     <div>
       <div className="flex items-baseline justify-between text-sm">
-        <span className={cn("num w-14 font-bold", better === "home" && "text-pitch-300")}>{fmt(s, s.home)}</span>
+        <span className={cn("num w-14 font-bold", better === "home" && "text-pitch-600")}>{fmt(s, s.home)}</span>
         <span className="text-ink-2 text-center text-xs font-semibold">{s.label}</span>
-        <span className={cn("num w-14 text-right font-bold", better === "away" && "text-pitch-300")}>{fmt(s, s.away)}</span>
+        <span className={cn("num w-14 text-right font-bold", better === "away" && "text-pitch-600")}>{fmt(s, s.away)}</span>
       </div>
       <div className="mt-1 flex h-2 gap-1" aria-hidden>
         <span className="bg-surface-2 flex flex-1 justify-end overflow-hidden rounded-full">

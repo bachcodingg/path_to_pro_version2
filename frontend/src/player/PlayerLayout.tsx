@@ -13,11 +13,11 @@ import {
   Shield,
   Star,
   TrendingUp,
-  Trophy,
   Watch,
 } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { DEMO } from "../shared/api";
+import { AppLink } from "../shared/AppLink";
 import { useAuth } from "../shared/auth";
 import { t } from "../shared/i18n";
 import { SkipLink } from "../shared/SkipLink";
@@ -80,7 +80,6 @@ function extrasFor(selfGuided: boolean) {
     // Availability for the team's sessions and matches (academy teams; needs the API)
     ...(selfGuided || DEMO ? [] : [{ to: "/player/team", label: t("nav.myteam"), icon: CalendarCheck }]),
     { to: "/player/devices", label: t("nav.devices"), icon: Watch },
-    { to: "/pro", label: t("nav.pro"), icon: Trophy },
   ];
 }
 
@@ -140,6 +139,9 @@ export function PlayerLayout() {
               <Icon className="h-5 w-5" aria-hidden /> {label}
             </NavLink>
           ))}
+          <div className="border-line my-3 border-t" />
+          {/* The pros' matches are in the Pro League app, which this opens */}
+          <AppLink app="leagues" className="text-ink-2 hover:text-ink rounded-md px-3 py-2 font-semibold hover:bg-white/5" />
         </nav>
         <div className="border-line flex items-center gap-3 border-t pt-3 text-sm">
           <Link to="/account" className="group flex min-w-0 flex-1 items-center gap-3" title={t("nav.account")}>
@@ -176,13 +178,7 @@ export function PlayerLayout() {
             <span className="brandmark text-[1.02rem]">PathToPro</span>
           </div>
           <span className="flex items-center">
-            <Link
-              to="/pro"
-              className="tap text-ink-2 flex h-11 w-11 items-center justify-center"
-              aria-label={t("nav.pro")}
-            >
-              <Trophy className="h-5 w-5" aria-hidden />
-            </Link>
+            <AppLink app="leagues" iconOnly className="h-11 w-11 justify-center" />
             <Link
               to="/account"
               className="tap flex h-11 w-11 items-center justify-center"

@@ -170,7 +170,7 @@ function Leaders({ players }: { players: PlayerRow[] }) {
         return (
           <Card key={k} className="overflow-hidden p-0">
             <div className="hero px-3 pt-2.5 pb-3">
-              <p className="text-pitch-300 text-[11px] font-bold">{label}</p>
+              <p className="text-pitch-600 text-[11px] font-bold">{label}</p>
               {first ? (
                 <div className="mt-1 flex items-end justify-between gap-2">
                   <span className="min-w-0">

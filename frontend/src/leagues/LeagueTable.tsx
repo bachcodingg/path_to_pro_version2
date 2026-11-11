@@ -144,7 +144,7 @@ export function MiniTable({ rows, highlight, compare, onPick, onMore }: { rows: 
     <Card className="overflow-hidden p-0">
       <div className="flex items-center justify-between px-4 pt-3 pb-1">
         <h2 className="font-display text-xl font-bold">League table</h2>
-        <button className="tap text-pitch-300 text-sm font-semibold hover:underline" onClick={onMore}>
+        <button className="tap text-pitch-600 text-sm font-semibold hover:underline" onClick={onMore}>
           Full table →
         </button>
       </div>

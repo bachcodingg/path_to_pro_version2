@@ -54,7 +54,7 @@ export function SectionTitle({ children, action }: { children: ReactNode; action
 export function Chip({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | Band | "win" }) {
   const tones = {
     neutral: "bg-surface-2 text-ink border-line",
-    green: "bg-ready/15 text-[#a9d0ff] border-ready/50",
+    green: "bg-ready/15 text-[#0c4f8a] dark:text-[#a9d0ff] border-ready/50",
     amber: "bg-caution/15 text-amber-800 dark:text-caution border-caution/50",
     red: "bg-recover/15 text-orange-800 dark:text-[#ffb78a] border-recover/50",
     win: "bg-win/15 text-green-800 dark:text-win border-win/40",

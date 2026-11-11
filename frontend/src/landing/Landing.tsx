@@ -5,11 +5,12 @@ import { CalendarCog, Check, ChevronDown, CodeXml, Cpu, Database, Eye, ShieldAle
 import { useEffect, useRef, useState, type CSSProperties, type RefObject } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { homeFor, useAuth } from "../shared/auth";
-import { COMP_COLOR } from "../pro/context";
+import { COMP_COLOR } from "../leagues/context";
 import { Bib } from "../shared/Bib";
 import { Button, cn } from "../shared/ui";
 import { RunLine, useFittedLines } from "./Pitch";
 import { ALL_PHOTOS, COMP_FACES, PROSPECTS, photoUrl } from "./players";
+import { APPS } from "../shared/apps";
 import { WeekBoard } from "./WeekBoard";
 import "./landing.css";
 
@@ -83,7 +84,7 @@ const ANCHORS = [
   ["#how", "How it works"],
   ["#roles", "Who it's for"],
   ["#safety", "Safety"],
-  ["#pro", "Pro leagues"],
+  ["#pro", "Pro League app"],
   ["#faq", "Questions"],
 ] as const;
 
@@ -693,14 +694,42 @@ const COMPS = [
   ["champions-league", "Champions League", "Finals 2004-2019", "14 finals"],
 ] as const;
 
+// Two apps on one platform: PathToPro, and Pro League Data Tracking as an app of its own
 function ProLeagues() {
+  const { pathtopro, leagues } = APPS;
   return (
     <section id="pro" data-zone className="lp-section">
       <div className="lp-wrap">
-        <h2 className="lp-h2">Learn from the pros</h2>
+        <h2 className="lp-h2">Two apps, one account</h2>
         <p className="lp-lead">
-          1,185 matches to study: how a team passes, shoots, defends and takes set pieces, player by player. Tables with form, and a match centre for every result.
+          PathToPro plans your training. Studying the pros has an app of its own: open it in the browser or install it next to PathToPro, and sign in with the
+          same account.
         </p>
+        <ul className="lp-apps">
+          <li>
+            <img src={pathtopro.icon} alt="" width={64} height={64} />
+            <div>
+              <h3>{pathtopro.name}</h3>
+              <p>{pathtopro.tagline}</p>
+              <Link to="/login" className="lp-apps-go">
+                Try the demo
+              </Link>
+            </div>
+          </li>
+          <li className="is-leagues">
+            <img src={leagues.icon} alt="" width={64} height={64} />
+            <div>
+              <h3>{leagues.name}</h3>
+              <p>{leagues.tagline}</p>
+              <a href={leagues.url} className="lp-apps-go">
+                Open the app
+              </a>
+            </div>
+          </li>
+        </ul>
+
+        <h3 className="lp-h3">Inside Pro League: 1,185 matches to study</h3>
+        <p className="lp-lead">How a team passes, shoots, defends and takes set pieces, player by player. Tables with form, and a match centre for every result.</p>
         <ul className="lp-table">
           {COMPS.map(([id, name, season, note]) => {
             const face = COMP_FACES[id];
@@ -722,9 +751,9 @@ function ProLeagues() {
           })}
         </ul>
         <p className="lp-small mt-4">
-          <Link to="/login" className="underline underline-offset-4">
-            Open Pro leagues
-          </Link>
+          <a href={leagues.url} className="underline underline-offset-4">
+            Open {leagues.shortName}
+          </a>
           . Match events from StatsBomb Open Data.
         </p>
       </div>
