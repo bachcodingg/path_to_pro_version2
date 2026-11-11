@@ -34,6 +34,9 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - name: Build demo website
         working-directory: frontend
+        # Pages serves a project site under /<repository name>/, so the build follows the repo
+        env:
+          VITE_BASE: /${{ github.event.repository.name }}/
         run: npm ci && npm run build:demo
       - uses: actions/upload-pages-artifact@v3
         with:

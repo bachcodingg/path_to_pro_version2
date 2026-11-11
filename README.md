@@ -14,7 +14,7 @@ Without an API key the LLM's part is done by rules, which is how every result be
 
 ## Try it
 
-**Live demo: https://bachcodingg.github.io/path_to_pro/** (no install, no account)
+**Live demo: https://bachcodingg.github.io/path_to_pro_version2/** (no install, no account)
 
 The website runs entirely in your browser on a snapshot of the synthetic season, recorded
 from the real API. Pick a demo account on the sign-in page; changes stay in your browser

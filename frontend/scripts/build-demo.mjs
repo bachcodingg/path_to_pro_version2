@@ -1,4 +1,4 @@
-// Static demo website build (GitHub Pages): demo mode, served under /path_to_pro/.
+// Static demo website build (GitHub Pages): demo mode, served under /path_to_pro/ unless VITE_BASE says otherwise (CI sets it to the repo name).
 // Expects public/demo/snapshot.json (backend/scripts/demo_snapshot.py).
 import { execSync } from "node:child_process";
 import { copyFileSync, existsSync } from "node:fs";
