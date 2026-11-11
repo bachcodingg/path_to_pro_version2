@@ -1188,6 +1188,114 @@
   font-weight: 700;
 }
 
+/* Prospects: photos pinned to the grass like stickers, each at its own slight angle ---------- */
+.lp-prospects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.6rem 1rem;
+  margin: 2.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+/* Two to a row on phones: an odd card out sits in the middle */
+@media (max-width: 767px) {
+  .lp-prospects li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: calc(50% - 0.5rem);
+  }
+}
+@media (min-width: 768px) {
+  .lp-prospects {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.2rem 1.6rem;
+  }
+}
+@media (min-width: 1100px) {
+  .lp-prospects {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.4rem;
+  }
+}
+.lp-prospects li:nth-child(5n + 1) {
+  --tilt: -1.6deg;
+}
+.lp-prospects li:nth-child(5n + 2) {
+  --tilt: 1.1deg;
+}
+.lp-prospects li:nth-child(5n + 3) {
+  --tilt: -0.7deg;
+}
+.lp-prospects li:nth-child(5n + 4) {
+  --tilt: 1.5deg;
+}
+.lp-prospects li:nth-child(5n) {
+  --tilt: -1deg;
+}
+.lp-prospect {
+  height: 100%;
+  margin: 0;
+  padding: 0.5rem 0.5rem 0.8rem;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 8px 11px 0 rgb(4 44 26 / 0.32);
+  transform: rotate(var(--tilt, 0deg));
+}
+.lp-prospect-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--turf-1);
+}
+.lp-prospect-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.lp-prospect-age {
+  position: absolute;
+  bottom: 0.45rem;
+  left: 0.45rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.25rem 0.5rem 0.2rem;
+  background: var(--night);
+  color: var(--chalk);
+  line-height: 1;
+}
+.lp-prospect-age small {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lp-prospect-age b {
+  font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+}
+.lp-prospect figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.6rem 0.15rem 0;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+.lp-prospect figcaption b {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variation-settings: "wdth" 84;
+  line-height: 1.1;
+}
+.lp-prospect-later {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1.5px dashed rgb(10 42 30 / 0.35);
+  font-size: 0.85rem;
+}
+
 /* Agility ladder ----------------------------------------------------------------------------- */
 .lp-ladder {
   display: grid;
@@ -1277,10 +1385,57 @@
   grid-row: 1 / span 3;
   background: var(--comp);
 }
+/* A face from the season, on the right of each row */
+.lp-table li {
+  grid-template-columns: 0.6rem minmax(0, 1fr) auto;
+}
+.lp-table-face {
+  display: flex;
+  grid-column: 3;
+  grid-row: 1 / span 3;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  width: 5.6rem;
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
+.lp-table-face img {
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 3px var(--comp);
+}
+.lp-table-face figcaption span {
+  display: none;
+}
 @media (min-width: 768px) {
   .lp-table li {
-    grid-template-columns: 0.8rem minmax(0, 1.1fr) minmax(0, 0.7fr) minmax(0, 1.2fr);
+    grid-template-columns: 0.8rem minmax(0, 1.1fr) minmax(0, 0.7fr) minmax(0, 1.2fr) minmax(0, 1.1fr);
     align-items: center;
+  }
+  .lp-table-face {
+    grid-column: auto;
+    grid-row: auto;
+    flex-direction: row;
+    width: auto;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    text-align: left;
+  }
+  .lp-table-face img {
+    width: 3.1rem;
+    height: 3.1rem;
+    flex-shrink: 0;
+  }
+  .lp-table-face figcaption span {
+    display: block;
+    font-weight: 500;
+    opacity: 0.75;
   }
   .lp-table li > span:not(.lp-table-swatch) {
     grid-column: auto;
@@ -1460,6 +1615,34 @@
   text-underline-offset: 4px;
 }
 .lp-footer a:hover {
+  text-decoration: underline;
+}
+.lp-credits {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.lp-credits summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.lp-credits p {
+  max-width: 60em;
+  margin: 0.6rem 0 0;
+}
+.lp-credits ul {
+  display: grid;
+  gap: 0.2rem 1.5rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .lp-credits ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.lp-credits a {
   text-decoration: underline;
 }
 

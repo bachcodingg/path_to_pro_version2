@@ -9,6 +9,7 @@ import { COMP_COLOR } from "../pro/context";
 import { Bib } from "../shared/Bib";
 import { Button, cn } from "../shared/ui";
 import { RunLine, useFittedLines } from "./Pitch";
+import { ALL_PHOTOS, COMP_FACES, PROSPECTS, photoUrl } from "./players";
 import { WeekBoard } from "./WeekBoard";
 import "./landing.css";
 
@@ -53,6 +54,7 @@ export function Landing() {
         <Roles />
         <Halfway />
         <Safety />
+        <Prospects />
         <Pathway />
         <ProLeagues />
         <Faq />
@@ -611,6 +613,48 @@ function GrowthCurve() {
   );
 }
 
+// --------------------------------------------------------------------------- prospects
+
+// Famous players near the start of their careers, pinned to the grass like stickers
+function Prospects() {
+  return (
+    <section id="prospects" data-zone className="lp-section">
+      <div className="lp-wrap">
+        <h2 className="lp-h2">They were your age once</h2>
+        <p className="lp-lead">
+          Every one of them was a teenager learning to handle a full season, a body that was still growing and a big jump in level. Here they are near the
+          start.
+        </p>
+        <ul className="lp-prospects">
+          {PROSPECTS.map((p) => (
+            <li key={p.name}>
+              <figure className="lp-prospect">
+                <div className="lp-prospect-photo">
+                  <img src={photoUrl(p.file)} alt={p.alt} width={440} height={550} loading="lazy" decoding="async" />
+                  <span className="lp-prospect-age" aria-hidden>
+                    <small>Age</small>
+                    <b className="led">{p.age}</b>
+                  </span>
+                </div>
+                <figcaption>
+                  <b>{p.name}</b>
+                  <span>
+                    {p.team}, {p.year}
+                  </span>
+                  <span className="lp-prospect-later">{p.later}</span>
+                </figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+        <p className="lp-small mt-8">
+          Photos from Wikimedia Commons, credited at the bottom of the page. These players have no connection with PathToPro.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 // --------------------------------------------------------------------------- pathway
 
 const LEVELS = ["Starter", "Grassroots", "Competitive amateur", "Elite amateur", "Trial-ready"];
@@ -658,14 +702,24 @@ function ProLeagues() {
           1,185 matches to study: how a team passes, shoots, defends and takes set pieces, player by player. Tables with form, and a match centre for every result.
         </p>
         <ul className="lp-table">
-          {COMPS.map(([id, name, season, note]) => (
-            <li key={id} style={{ "--comp": COMP_COLOR[id] } as CSSProperties}>
-              <span className="lp-table-swatch" aria-hidden />
-              <b>{name}</b>
-              <span>{season}</span>
-              <span>{note}</span>
-            </li>
-          ))}
+          {COMPS.map(([id, name, season, note]) => {
+            const face = COMP_FACES[id];
+            return (
+              <li key={id} style={{ "--comp": COMP_COLOR[id] } as CSSProperties}>
+                <span className="lp-table-swatch" aria-hidden />
+                <b>{name}</b>
+                <span>{season}</span>
+                <span>{note}</span>
+                <figure className="lp-table-face">
+                  <img src={photoUrl(face.file)} alt={face.alt} width={240} height={240} loading="lazy" decoding="async" />
+                  <figcaption>
+                    {face.name}
+                    <span>{face.team}</span>
+                  </figcaption>
+                </figure>
+              </li>
+            );
+          })}
         </ul>
         <p className="lp-small mt-4">
           <Link to="/login" className="underline underline-offset-4">
@@ -806,6 +860,20 @@ function Footer() {
           </nav>
         </div>
         <p className="lp-small mt-5">Train smart. Grow safe. Get better. Demo with synthetic players. Team analysis uses StatsBomb Open Data.</p>
+        <details className="lp-credits">
+          <summary>Photo credits</summary>
+          <p>
+            Player photos are cropped from Wikimedia Commons and reused under the Creative Commons licences below; the crops are shared under the same
+            licences. The players shown have no connection with PathToPro and do not endorse it.
+          </p>
+          <ul>
+            {ALL_PHOTOS.map((p) => (
+              <li key={p.file}>
+                <a href={p.source}>{p.name}</a> by {p.author}, <a href={p.licenseUrl}>{p.license}</a>
+              </li>
+            ))}
+          </ul>
+        </details>
       </div>
     </footer>
   );
