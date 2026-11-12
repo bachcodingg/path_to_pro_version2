@@ -691,6 +691,7 @@ const COMPS = [
   ["premier-league", "Premier League", "2015/16", "Leicester City's title season"],
   ["ligue-1", "Ligue 1", "2015/16", "377 of 380 matches"],
   ["bundesliga", "Bundesliga", "2023/24", "Leverkusen, unbeaten champions"],
+  ["ligue-1-psg", "PSG in Ligue 1", "2021/22 and 2022/23", "Mbappé, Messi and Neymar"],
   ["champions-league", "Champions League", "Finals 2004-2019", "14 finals"],
 ] as const;
 
@@ -728,24 +729,29 @@ function ProLeagues() {
           </li>
         </ul>
 
-        <h3 className="lp-h3">Inside Pro League: 1,185 matches to study</h3>
-        <p className="lp-lead">How a team passes, shoots, defends and takes set pieces, player by player. Tables with form, and a match centre for every result.</p>
+        <h3 className="lp-h3">Inside Pro League: 1,243 matches and every player in them</h3>
+        <p className="lp-lead">
+          How a team passes, shoots, defends and takes set pieces, and a page for every player: full squads of the biggest clubs, percentiles and shot maps.
+          Tables with form, and a match centre for every result.
+        </p>
         <ul className="lp-table">
           {COMPS.map(([id, name, season, note]) => {
-            const face = COMP_FACES[id];
+            const face = COMP_FACES[id] as (typeof COMP_FACES)[string] | undefined;
             return (
               <li key={id} style={{ "--comp": COMP_COLOR[id] } as CSSProperties}>
                 <span className="lp-table-swatch" aria-hidden />
                 <b>{name}</b>
                 <span>{season}</span>
                 <span>{note}</span>
-                <figure className="lp-table-face">
-                  <img src={photoUrl(face.file)} alt={face.alt} width={240} height={240} loading="lazy" decoding="async" />
-                  <figcaption>
-                    {face.name}
-                    <span>{face.team}</span>
-                  </figcaption>
-                </figure>
+                {face && (
+                  <figure className="lp-table-face">
+                    <img src={photoUrl(face.file)} alt={face.alt} width={240} height={240} loading="lazy" decoding="async" />
+                    <figcaption>
+                      {face.name}
+                      <span>{face.team}</span>
+                    </figcaption>
+                  </figure>
+                )}
               </li>
             );
           })}
