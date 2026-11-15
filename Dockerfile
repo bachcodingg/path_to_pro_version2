@@ -1,6 +1,5 @@
 # Single-container deployment (e.g. Render): the API also serves the built website.
 #   docker build -t pathtopro . && docker run -p 8000:8000 -e PATHTOPRO_AUTOSEED=on ... pathtopro
-# docker
 FROM node:22-alpine AS web
 WORKDIR /web
 COPY frontend/package.json frontend/package-lock.json ./
