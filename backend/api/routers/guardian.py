@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from api import clock
 from api.db import get_db
-from api.deps import CurrentUser, age_on, audit, has_consent, player_in_scope, require
+from api.deps import CurrentUser, age_on, audit, consent_view, decides_own_consent, player_in_scope, require
 from api.routers.player import roadmap_view
 from api.services import views
 from domain.enums import ConsentDataType, Role
@@ -34,13 +34,6 @@ from pathway import service as pathway
 
 router = APIRouter(prefix="/api/guardian", tags=["guardian"])
 
-CONSENT_TEXT = {
-    ConsentDataType.WELLNESS: "Morning check-in (sleep quality, fatigue, stress, soreness, mood)",
-    ConsentDataType.SLEEP: "Sleep duration",
-    ConsentDataType.HRV: "Heart-rate variability from a wearable",
-    ConsentDataType.ANTHROPOMETRICS: "Height, sitting height and weight (growth tracking)",
-    ConsentDataType.TEST_RESULTS: "Fitness test results",
-}
 
 
 @router.get("/children")
@@ -81,6 +74,8 @@ def summary(player_id: str, user: CurrentUser = Depends(require(Role.GUARDIAN)),
         "avg_sleep_h": None if not sleeps else round(statistics.fmean(sleeps), 1),
         "goals": [{"label": g["label"], "progress": g["progress"]} for g in rm["goals"] if g["status"] == "active"],
         "streak": rm["streak"],
+        # The week in plain words, for the parent who consents for the child (under 16 only)
+        "week_note": None if decides_own_consent(p, today) else views.week_note(db, p, today),
         # Safety flags with no staff to take them (self-guided players): the parent is told.
         "alerts": [
             {"id": a.id, "kind": a.kind, "text": ALERT_TEXT.get(a.kind, a.kind), "created_at": a.created_at.isoformat()}
@@ -135,14 +130,7 @@ def alert_seen(
 @router.get("/children/{player_id}/consent")
 def get_consent(player_id: str, user: CurrentUser = Depends(require(Role.GUARDIAN)), db: Session = Depends(get_db)) -> dict:
     p = player_in_scope(player_id, user, db)
-    today = clock.today()
-    return {
-        "age": round(age_on(p.birth_date, today), 1),
-        "items": [
-            {"data_type": dt.value, "text": CONSENT_TEXT[dt], "granted": has_consent(db, p, dt, today)}
-            for dt in ConsentDataType
-        ],
-    }
+    return consent_view(db, p, clock.today())
 
 
 class ConsentChange(BaseModel):
@@ -155,6 +143,12 @@ def set_consent(
     player_id: str, body: ConsentChange, user: CurrentUser = Depends(require(Role.GUARDIAN)), db: Session = Depends(get_db)
 ) -> dict:
     p = player_in_scope(player_id, user, db)
+    if decides_own_consent(p, clock.today()):
+        # From the age of digital consent it is the player's own decision (Account page);
+        # what a parent agreed earlier stays in force until the player changes it.
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, f"{p.display_name.split()[0]} is old enough to decide this in their own account"
+        )
     db.add(
         Consent(
             player_id=p.id,

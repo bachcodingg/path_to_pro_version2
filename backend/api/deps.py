@@ -127,3 +127,44 @@ def has_consent(db: Session, player: Player, data_type: ConsentDataType, today: 
     if rec is not None:
         return rec.granted
     return age_on(player.birth_date, today) >= settings.digital_consent_age
+
+
+CONSENT_TEXT = {
+    ConsentDataType.WELLNESS: "Morning check-in (sleep quality, fatigue, stress, soreness, mood)",
+    ConsentDataType.SLEEP: "Sleep duration",
+    ConsentDataType.HRV: "Heart-rate variability from a wearable",
+    ConsentDataType.ANTHROPOMETRICS: "Height, sitting height and weight (growth tracking)",
+    ConsentDataType.TEST_RESULTS: "Fitness test results",
+}
+
+
+def decides_own_consent(player: Player, today: date) -> bool:
+    """From the age of digital consent the player decides; before it, a guardian does."""
+    return age_on(player.birth_date, today) >= settings.digital_consent_age
+
+
+def consent_view(db: Session, player: Player, today: date) -> dict:
+    return {
+        "age": round(age_on(player.birth_date, today), 1),
+        "self_managed": decides_own_consent(player, today),
+        "items": [
+            {"data_type": dt.value, "text": CONSENT_TEXT[dt], "granted": has_consent(db, player, dt, today)}
+            for dt in ConsentDataType
+        ],
+    }
+
+
+def record_self_consent(db: Session, player: Player, today: date, at: datetime | None = None) -> int:
+    """A player old enough to consent agreed at sign-up: write that down, one record per kind
+    of data, so there is evidence of who agreed and when, and something they can withdraw.
+    Kinds that already have a record (a guardian's, or an earlier choice) are left alone."""
+    if not decides_own_consent(player, today):
+        return 0
+    have = set(db.scalars(select(ConsentRecord.data_type).where(ConsentRecord.player_id == player.id)))
+    missing = [dt for dt in ConsentDataType if dt not in have]
+    for dt in missing:
+        rec = ConsentRecord(player_id=player.id, guardian_id=None, data_type=dt, granted=True)
+        if at is not None:
+            rec.recorded_at = at
+        db.add(rec)
+    return len(missing)

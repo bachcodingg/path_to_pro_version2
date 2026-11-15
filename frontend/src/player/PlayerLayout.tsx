@@ -222,7 +222,7 @@ export function PlayerLayout() {
                   end={end}
                   className={({ isActive }) =>
                     cn(
-                      "tap relative flex flex-col items-center justify-center gap-0.5 py-2 text-center text-[10.5px] leading-tight font-semibold",
+                      "tap relative flex flex-col items-center justify-center gap-0.5 py-2 text-center text-xs leading-tight font-semibold",
                       // the active tab gets a bar along the top edge, as in the league apps
                       isActive ? "text-pitch-300 before:bg-pitch-300 before:absolute before:inset-x-2 before:top-0 before:h-1" : "text-ink-2",
                     )

@@ -75,7 +75,7 @@ export function Pathway() {
         <div className="space-y-5">
           <Card>
             <div className="flex items-center gap-3">
-              <div className="bg-pitch-600 flex h-14 w-14 shrink-0 items-center justify-center rounded-[10px] text-2xl font-extrabold text-white">
+              <div className="bg-pitch-300 flex h-14 w-14 shrink-0 items-center justify-center rounded-[10px] text-2xl font-extrabold text-pitch-950">
                 {a.level}
               </div>
               <div>

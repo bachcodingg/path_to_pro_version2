@@ -163,7 +163,7 @@ function DrillCard({ d, index, open: initial = false }: { d: Drill; index?: numb
     <Card id={`drill-${d.id}`} className={cn("p-0", initial && "ring-pitch-400 ring-2")}>
       <button className="tap flex w-full items-start gap-3 p-4 text-left" onClick={() => setOpen(!open)} aria-expanded={open}>
         {index != null && (
-          <span className="bg-pitch-600 font-display flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-lg font-bold text-white">
+          <span className="bg-pitch-300 font-display flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-lg font-bold text-pitch-950">
             {index}
           </span>
         )}

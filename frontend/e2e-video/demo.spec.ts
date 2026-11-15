@@ -56,7 +56,7 @@ test("PathToPro in two minutes", async ({ page }) => {
   await signIn(page, "p03@demo.pathtopro");
   await expect(page.getByRole("heading", { name: /Hi / })).toBeVisible();
   await shot(page, "Player: today's session and a readiness score from sleep, HRV and a check-in", 3000);
-  await page.getByText("Pre-match warm-up").click();
+  await page.getByRole("link", { name: /Tap to start/ }).click();
   await shot(page, "The morning check-in: four quick questions and a mood, under 30 seconds", 1600);
   for (let i = 0; i < 4; i++) {
     await page.getByRole("button", { name: "Next" }).click();
@@ -70,9 +70,9 @@ test("PathToPro in two minutes", async ({ page }) => {
 
   // Coach: the squad, then the approval
   await signIn(page, "coach@demo.pathtopro");
-  await expect(page.getByRole("heading", { name: "Dressing room" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Squad readiness" })).toBeVisible();
   await shot(page, "Coach: readiness per player and day, growth-zone rings and load flags", 3400);
-  await page.getByRole("link", { name: "Substitution board" }).click();
+  await page.getByRole("link", { name: "Approvals" }).click();
   const card = page.getByRole("article", { name: /^(Session swap|Load cut|Intensity change|Match minutes limit): Leon U.$/ });
   await expect(card).toBeVisible();
   await card.evaluate((e) => e.scrollIntoView({ block: "center" }));

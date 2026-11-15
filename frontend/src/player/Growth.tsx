@@ -63,12 +63,35 @@ export function Growth() {
           </Card>
           <Card className="h-72 p-2">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={pts} margin={{ top: 10, right: 10, bottom: 0, left: -10 }}>
+              <LineChart data={pts} margin={{ top: 10, right: 12, bottom: 18, left: -6 }}>
                 <CartesianGrid stroke="rgba(255,255,255,0.08)" />
-                <XAxis dataKey="age" type="number" domain={["dataMin - 0.2", "dataMax + 0.4"]} tickFormatter={(v) => v.toFixed(1)} stroke="var(--ink-2)" fontSize={12} />
-                <YAxis domain={["dataMin - 3", "dataMax + 3"]} stroke="var(--ink-2)" fontSize={12} unit=" cm" width={60} />
+                <XAxis
+                  dataKey="age"
+                  type="number"
+                  domain={[(min: number) => Math.floor(min * 2 - 0.5) / 2, (max: number) => Math.ceil(max * 2 + 0.5) / 2]}
+                  tickFormatter={(v) => String(Math.round(v * 10) / 10)}
+                  stroke="var(--ink-2)"
+                  fontSize={12}
+                  label={{ value: "Age (years)", position: "insideBottom", offset: -10, fill: "var(--ink-2)", fontSize: 12 }}
+                />
+                <YAxis
+                  domain={[(min: number) => Math.floor((min - 2) / 5) * 5, (max: number) => Math.ceil((max + 2) / 5) * 5]}
+                  allowDecimals={false}
+                  stroke="var(--ink-2)"
+                  fontSize={12}
+                  unit=" cm"
+                  width={60}
+                />
                 {data.phv_window && (
-                  <ReferenceArea x1={data.phv_window[0]} x2={data.phv_window[1]} fill="var(--color-caution)" fillOpacity={0.18} label={{ value: "Growth zone", fill: "var(--color-caution)", fontSize: 11, position: "insideTop" }} />
+                  // "hidden": drawn even when the zone reaches beyond the ages measured so far
+                  <ReferenceArea
+                    x1={data.phv_window[0]}
+                    x2={data.phv_window[1]}
+                    ifOverflow="hidden"
+                    fill="var(--color-caution)"
+                    fillOpacity={0.18}
+                    label={{ value: "Growth zone", fill: "var(--color-caution)", fontSize: 12, position: "insideTop" }}
+                  />
                 )}
                 <Tooltip contentStyle={{ background: "var(--surface)", border: "1px solid var(--line)" }} labelFormatter={(v) => `Age ${Number(v).toFixed(1)}`} />
                 <Line type="monotone" dataKey="height_cm" stroke="var(--brand-300)" strokeWidth={3} dot={{ r: 3 }} name="Height (cm)" />

@@ -220,6 +220,16 @@ select:not([multiple]):not(.select-plain) {
   cursor: pointer;
 }
 
+/* Keyboard shortcut hints: only where there is a keyboard and a mouse */
+.kbd-hint {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .kbd-hint {
+    display: inline;
+  }
+}
+
 /* 44px minimum tap targets (WCAG 2.2 target size) */
 .tap {
   min-height: 44px;

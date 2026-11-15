@@ -120,6 +120,16 @@ export interface Today {
   logged?: { minutes: number; rpe: number; load: number }[];
   consent?: { wellness: boolean; test_results: boolean };
   diary_due?: DiaryDue[];
+  // A plan change waiting for the coach: the player is told it exists and who decides
+  pending_change?: { approver: string | null; lighter: boolean; load_change_pct: number; today: PlanDay | null } | null;
+  // An open pain report, red mood or silence the named adult has not answered yet
+  on_hold?: { kind: string; contact: string | null } | null;
+}
+
+export interface ConsentView {
+  age: number;
+  self_managed: boolean; // from the age of digital consent the player decides, before it a parent
+  items: { data_type: string; text: string; granted: boolean }[];
 }
 
 export interface TodayPathway {
@@ -274,6 +284,9 @@ export interface Proposal {
   explanation_player: string | null;
   solver_status: string | null;
   teams?: string[];
+  load?: { current: number; proposed: number; change_pct: number } | null;
+  readiness?: { score: number | null; band: Band | null; date: string } | null;
+  flags?: string[];
 }
 
 export interface HeatmapRow {

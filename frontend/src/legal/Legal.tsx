@@ -141,7 +141,9 @@ export function Privacy() {
       <p>
         Health data is processed only with explicit consent (Art. 9(2)(a) and Art. 6(1)(a) GDPR), given per kind of data and
         revocable at any time in the app; withdrawing consent does not affect processing before it. Below the age of 16, a parent or
-        guardian gives this consent (Art. 8 GDPR; 16 is the age of digital consent in Germany). Account data is processed to provide the
+        guardian gives this consent in the family view (Art. 8 GDPR; 16 is the age of digital consent in Germany). From 16 the player
+        gives it at sign-up, where it is recorded per kind of data, and changes it under Account, Your data; a parent can then no longer
+        change it. Account data is processed to provide the
         service you asked for (Art. 6(1)(b) GDPR); the access log to keep health data secure (Art. 6(1)(f) and Art. 32 GDPR).
       </p>
       <H>Who can see it</H>

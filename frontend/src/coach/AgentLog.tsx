@@ -111,8 +111,8 @@ export function AgentLog() {
   return (
     <div className="space-y-5">
       <PageHeader
-        eyebrow="Matchday"
-        title="Match commentary"
+        eyebrow="Match commentary"
+        title="Agent log"
         subtitle="What the agents did overnight and why, newest first. Open any action to see the evidence behind it."
         actions={
           <Button variant="secondary" onClick={() => download(`/api/coach/agent-log.csv?${qs}`, "agent-log.csv")}>

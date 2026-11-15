@@ -1,5 +1,5 @@
 // "Match day sheet": readiness battery, today's session, recovery tasks, "Why?" cards.
-import { CheckCircle2, ChevronDown, ChevronRight, Circle, Dumbbell, Flame, Footprints, HeartHandshake, Lightbulb, ShieldAlert, TrendingUp } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, Circle, Dumbbell, Flame, Footprints, Hand, HeartHandshake, Hourglass, Lightbulb, ShieldAlert, TrendingUp } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { api } from "../shared/api";
@@ -52,15 +52,7 @@ export function TodayScreen() {
             hrv={r?.components ? "hrv" in r.components : true}
           />
         </div>
-        {data.flags.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {data.flags.map((f) => (
-              <span key={f.kind} className="bg-pitch-950/70 rounded-md px-2.5 py-1 text-[13px] font-semibold">
-                {f.text}
-              </span>
-            ))}
-          </div>
-        )}
+        <DaySummary flags={data.flags} band={r?.band ?? null} />
       </section>
 
       <AnnouncementsCard />
@@ -72,7 +64,7 @@ export function TodayScreen() {
             {checkin.escalated && checkin.notified === "guardian"
               ? "Thanks for your honest check-in. We've let your parent know, and your next two days are now rest or easy recovery. You don't need to do anything else."
               : checkin.escalated || checkin.notified === "staff"
-                ? "Thanks for your honest check-in. Someone from the staff will talk to you today. You don't need to do anything else."
+                ? "Thanks for your honest check-in. Someone from the staff will talk to you today, before you train."
                 : "Thanks for your honest check-in. Your next two days are now rest or easy recovery. Please tell an adult you trust how you feel."}
           </p>
         </Card>
@@ -88,10 +80,6 @@ export function TodayScreen() {
       {/* Wide screens: today's plan on the left, progress and to-dos on the right */}
       <div className="space-y-5 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
         <div className="space-y-5">
-          {data.consent?.wellness !== false && (
-            <MatchDiary due={data.diary_due ?? []} position={user?.position} onSaved={() => void reload()} />
-          )}
-
           {data.consent && !data.consent.wellness ? (
             <Link to="/player/levels" className="block">
               <Card className="border-caution/50">
@@ -108,24 +96,27 @@ export function TodayScreen() {
             </Link>
           )}
 
-          <section>
+          <section aria-label={t("today.session")}>
             <SectionTitle>{t("today.session")}</SectionTitle>
-            <Card className="flex items-center gap-4">
-              <div
-                className={cn("flex h-14 w-14 flex-col items-center justify-center rounded-md leading-none", intensityClass(data.session.kind, data.session.rpe))}
-                aria-hidden
-              >
-                <span className="text-lg font-extrabold">{data.session.kind === "rest" ? "–" : data.session.rpe}</span>
-                {data.session.kind !== "rest" && <span className="mt-0.5 text-[10px] font-semibold opacity-80">effort</span>}
+            <Card className={cn("space-y-3", (data.on_hold || data.pending_change) && data.session.kind !== "rest" && "border-caution/60")}>
+              <div className="flex items-center gap-4">
+                <div
+                  className={cn("flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-md leading-none", intensityClass(data.session.kind, data.session.rpe))}
+                  aria-hidden
+                >
+                  <span className="text-lg font-extrabold">{data.session.kind === "rest" ? "–" : data.session.rpe}</span>
+                  {data.session.kind !== "rest" && <span className="mt-0.5 text-[11px] font-semibold opacity-80">effort</span>}
+                </div>
+                <div>
+                  <p className="text-lg font-bold">{data.session.label}</p>
+                  <p className="text-ink-2 text-sm">
+                    {data.session.kind === "rest"
+                      ? "Recover and enjoy your day off"
+                      : `${data.session.minutes} min · effort ${data.session.rpe}/10`}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-lg font-bold">{data.session.label}</p>
-                <p className="text-ink-2 text-sm">
-                  {data.session.kind === "rest"
-                    ? "Recover and enjoy your day off"
-                    : `${data.session.minutes} min · effort ${data.session.rpe}/10`}
-                </p>
-              </div>
+              <SessionNote today={data} />
             </Card>
             {data.content && (
               <Card className="mt-2">
@@ -166,6 +157,9 @@ export function TodayScreen() {
               </Card>
             </Link>
           </section>
+          {data.consent?.wellness !== false && (
+            <MatchDiary due={data.diary_due ?? []} position={user?.position} onSaved={() => void reload()} />
+          )}
           <TipOfTheDay />
         </div>
 
@@ -227,6 +221,80 @@ export function TodayScreen() {
       </div>
     </div>
   );
+}
+
+// What the flags mean for today, in one sentence a 13-year-old can act on. The separate
+// reasons are one tap away, so the screen does not open with a row of warnings.
+const FLAG_WORDS: Record<string, string> = {
+  load_spike: "you've trained a lot lately",
+  short_sleep: "you haven't slept enough",
+  low_hrv: "your body is still recovering",
+  phv_window: "you're growing fast right now",
+  high_monotony: "your days have all been about as hard",
+};
+
+export function DaySummary({ flags, band }: { flags: Today["flags"]; band: "green" | "amber" | "red" | null }) {
+  if (flags.length === 0) return null;
+  // The two that matter most (in the order above); the rest are under "What this is based on"
+  const words = Object.keys(FLAG_WORDS)
+    .filter((k) => flags.some((f) => f.kind === k))
+    .map((k) => FLAG_WORDS[k])
+    .slice(0, 2);
+  const list = words.length > 1 ? `${words.slice(0, -1).join(", ")} and ${words[words.length - 1]}` : (words[0] ?? "");
+  const tail = band === "red" ? "so today is about recovering" : band === "amber" ? "so take care today" : "and you're still good to go";
+  const text = list ? `${list[0].toUpperCase()}${list.slice(1)}, ${tail}.` : band === "red" ? "Your battery is low, so today is about recovering." : null;
+  return (
+    <div className="mt-3">
+      {text && <p className="text-[15px] font-semibold">{text}</p>}
+      <details className="mt-1">
+        <summary className="tap inline-flex cursor-pointer items-center text-[15px] font-semibold underline underline-offset-4">What this is based on</summary>
+        <ul className="mt-1 flex flex-wrap gap-2">
+          {flags.map((f) => (
+            <li key={f.kind} className="bg-pitch-950/70 rounded-md px-2.5 py-1 text-[13px] font-semibold">
+              {f.text}
+            </li>
+          ))}
+        </ul>
+      </details>
+    </div>
+  );
+}
+
+// Under today's session: the plan on the card is not always the last word. A report to the
+// named adult puts the day on hold; a plan change that waits for the coach is announced
+// with who decides, so a hard session never stands next to a low battery without comment.
+export function SessionNote({ today }: { today: Today }) {
+  const hold = today.on_hold;
+  const pending = today.pending_change;
+  if (hold) {
+    const who = hold.contact ?? "your coach";
+    return (
+      <p className="border-line flex gap-2 border-t pt-3 text-[15px]" role="status">
+        <Hand className="text-caution mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+        <span>
+          <strong>On hold.</strong> Speak to {who} before you train today.
+          {hold.kind === "pain_report" && " Don't train through pain."}
+        </span>
+      </p>
+    );
+  }
+  if (pending && today.session.kind !== "rest") {
+    const who = pending.approver ?? "your coach";
+    return (
+      <p className="border-line flex gap-2 border-t pt-3 text-[15px]" role="status">
+        <Hourglass className="text-caution mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+        <span>
+          <strong>{pending.lighter ? "A lighter plan" : "A changed plan"} is waiting for {who}.</strong>{" "}
+          {pending.today &&
+            (pending.today.kind === "rest"
+              ? "Today would become a rest day. "
+              : `Today would become ${pending.today.label.toLowerCase()} at effort ${pending.today.rpe}/10. `)}
+          If you feel tired before then, tell {who} and take it easier.
+        </span>
+      </p>
+    );
+  }
+  return null;
 }
 
 export function Battery({

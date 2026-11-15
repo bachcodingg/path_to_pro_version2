@@ -126,7 +126,16 @@ def _proposal_json(db: Session, p: Proposal) -> dict:
         "explanation_player": plan.explanation_player if plan else None,
         "solver_status": plan.solver_status if plan else None,
         "teams": [t["team"] for t in performance.registrations(db, player, clock.today())],
+        "load": None,
+        "readiness": None,
+        "flags": [],
     }
+    st = views.latest_status(db, player.id, clock.today())
+    if st is not None:
+        out["readiness"] = {"score": st.readiness, "band": st.band, "date": st.day.isoformat()}
+        out["flags"] = sorted(f["kind"] for f in st.flags)
+    if plan and plan.items:
+        out["load"] = views.plan_change(db, player, plan)
     if plan:
         items = sorted(plan.items, key=lambda i: i.day)
         start, n = items[0].day, len(items)
@@ -140,13 +149,45 @@ def _proposal_json(db: Session, p: Proposal) -> dict:
     return out
 
 
+@router.get("/attention")
+def attention(user: CurrentUser = Depends(require(*STAFF)), db: Session = Depends(get_db)) -> dict:
+    """What is waiting for a person, as counts for the top of the squad page (no health detail)."""
+    ids = {p.id for p in _squad_players(db, user)}
+    pending = [p for p in db.scalars(select(Proposal).where(Proposal.status == ProposalStatus.PENDING)) if p.player_id in ids]
+    open_reports = [
+        e for e in db.scalars(select(Escalation).where(Escalation.acknowledged_at.is_(None))) if e.player_id in ids
+    ]
+    return {
+        "approvals": len(pending),
+        "plan_changes": sum(1 for p in pending if p.proposed_plan_id),
+        "escalations": len(open_reports),
+    }
+
+
+_BAND_RISK = {"red": 0, "amber": 1, "green": 2}
+
+
+def _risk_key(p: dict) -> tuple:
+    """Inbox order: plan changes before new goals, then the player who needs the coach most
+    (worst readiness colour, most risk flags, lowest score); the oldest first among equals."""
+    r = p["readiness"] or {}
+    score = r.get("score")
+    return (
+        0 if p["proposed"] else 1,
+        _BAND_RISK.get(r.get("band"), 3),
+        -len(p["flags"]),
+        101 if score is None else score,
+        p["created_at"],
+    )
+
+
 @router.get("/inbox")
 def inbox(user: CurrentUser = Depends(require(*STAFF)), db: Session = Depends(get_db)) -> list[dict]:
     ids = {p.id for p in _squad_players(db, user)}
     props = db.scalars(
         select(Proposal).where(Proposal.status == ProposalStatus.PENDING).order_by(Proposal.created_at)
     ).all()
-    out = [_proposal_json(db, p) for p in props if p.player_id in ids]
+    out = sorted((_proposal_json(db, p) for p in props if p.player_id in ids), key=_risk_key)
     audit(db, user, "read", "proposal", None, view="inbox", n=len(out))
     db.commit()
     return out

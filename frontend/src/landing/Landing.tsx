@@ -321,12 +321,13 @@ const ROLES: Record<RoleKey, { tab: string; number: number; title: string; point
     number: 12,
     title: "Peace of mind, not surveillance",
     points: [
-      "The week at a glance: sessions done, average sleep, check-in streak",
+      "The week in plain words: normal or lighter, why, and who approved it",
+      "Sessions done, average sleep and the check-in streak at a glance",
       "Consent per data type: check-in, sleep, heart rate, growth, tests",
       "Under 16, check-ins wait until a parent has linked with an invite code",
       "Academy fees and what is due, in the same place",
     ],
-    demo: "guardian02@demo.pathtopro",
+    demo: "guardian15@demo.pathtopro",
     demoLabel: "Try as a parent",
   },
   physio: {
@@ -453,7 +454,7 @@ function MiniHeatmap() {
 function MiniFamily() {
   return (
     <>
-      <p className="lp-mock-title">Family: Noah H.</p>
+      <p className="lp-mock-title">Family: Leon U.</p>
       <dl className="grid grid-cols-3 gap-2">
         {[
           ["3", "sessions done"],
@@ -816,7 +817,7 @@ function FarGoal() {
   const picks: [RoleKey, string, string][] = [
     ["player", "Player", "p15@demo.pathtopro"],
     ["coach", "Coach", "coach@demo.pathtopro"],
-    ["family", "Parent", "guardian02@demo.pathtopro"],
+    ["family", "Parent", "guardian15@demo.pathtopro"],
     ["physio", "Physio", "physio@demo.pathtopro"],
   ];
   const title = useRef<HTMLHeadingElement>(null);

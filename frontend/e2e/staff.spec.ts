@@ -3,7 +3,9 @@ import { login, SHOTS } from "./helpers";
 
 test("coach heatmap shows the squad with PHV rings and load flags", async ({ page }) => {
   await login(page, "coach@demo.pathtopro");
-  await expect(page.getByRole("heading", { name: "Dressing room" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Squad readiness" })).toBeVisible();
+  // What is waiting for the coach comes before the table
+  await expect(page.getByRole("region", { name: "Needs you" }).getByRole("link", { name: /plan changes? to approve/ })).toBeVisible();
   await expect(page.getByRole("row")).toHaveCount(26); // header + 25 players
   await expect(page.getByLabel("Growth zone").first()).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/coach-heatmap.png` });
@@ -11,10 +13,19 @@ test("coach heatmap shows the squad with PHV rings and load flags", async ({ pag
 
 test("coach approves the tired player's lighter week with one key press", async ({ page }) => {
   await login(page, "coach@demo.pathtopro");
-  await page.getByRole("link", { name: "Substitution board" }).click();
+  await page.getByRole("link", { name: "Approvals" }).click();
   const card = page.getByRole("article", { name: /^(Session swap|Load cut|Intensity change|Match minutes limit): Leon U.$/ });
   await expect(card).toBeVisible();
+  // The player who needs the coach most is the first card, with the reason in plain words,
+  // how much lighter the week gets and the days that change
+  await expect(page.getByRole("article").first()).toHaveAttribute("aria-label", /Leon U\.$/);
+  await expect(card.getByText(/above the 4-week average/)).toBeVisible();
+  await expect(card.getByText(/% less load over these days/)).toBeVisible();
+  await expect(card.getByRole("list", { name: "What changes" }).getByRole("listitem").first()).toBeVisible();
+  // The numbers behind it, the full week and the policy rule are one tap away
+  await card.getByText("Full week and how this was decided").click();
   await expect(card.getByText("Growth zone", { exact: true })).toBeVisible();
+  await expect(card.getByText(/Why it needs you:/)).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/coach-inbox.png` });
 
   const started = Date.now();
@@ -28,8 +39,8 @@ test("tired player sees the Why? card with the approver", async ({ page }) => {
   // Approve as coach if still pending (the previous test does it on the real server; the
   // static demo keeps state per browser), then switch to the player.
   await login(page, "coach@demo.pathtopro");
-  await page.getByRole("link", { name: "Substitution board" }).click();
-  await expect(page.getByRole("heading", { name: "Substitution board" })).toBeVisible();
+  await page.getByRole("link", { name: "Approvals" }).click();
+  await expect(page.getByRole("heading", { name: "Approvals" })).toBeVisible();
   const card = page.getByRole("article", { name: /^(Session swap|Load cut|Intensity change|Match minutes limit): Leon U.$/ });
   if (await card.count()) {
     await card.getByRole("button", { name: "Approve" }).click();
@@ -49,12 +60,12 @@ test("tactics board, scouting report and match commentary", async ({ page }) => 
   await expect(page.getByRole("img", { name: "Formation" })).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/coach-tactics.png` });
 
-  await page.getByRole("link", { name: "Dressing room" }).click();
+  await page.getByRole("link", { name: "Squad readiness" }).click();
   await page.getByRole("link", { name: "Leon U." }).click();
   await expect(page.getByRole("heading", { name: "Leon U." })).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/coach-profile.png`, fullPage: true });
 
-  await page.getByRole("link", { name: "Match commentary" }).click();
+  await page.getByRole("link", { name: "Agent log" }).click();
   await expect(page.getByRole("listitem").first()).toContainText(/Planner|Monitor|Development Coach|Safety flag/);
   await page.screenshot({ path: `${SHOTS}/coach-log.png` });
 });
@@ -70,8 +81,10 @@ test("physio queue has the pain report and can acknowledge it", async ({ page })
 });
 
 test("guardian sees summary and can switch consent", async ({ page }) => {
-  await login(page, "guardian02@demo.pathtopro");
+  await login(page, "guardian15@demo.pathtopro"); // Leon's parent: he is 14, so the switches are theirs
   await expect(page.getByText("sessions done")).toBeVisible();
+  // The week in plain words, with who decides, before the numbers
+  await expect(page.getByRole("region", { name: "This week in short" })).toContainText(/Alex Weber|normal training week|unchanged/);
   const sw = page.getByRole("checkbox", { name: /Heart-rate variability/ });
   const was = await sw.isChecked();
   await sw.locator("..").click();

@@ -49,7 +49,7 @@ grouped cross-validation), only accepting weights that catch at least as many st
 days, and a coach applies them (`analytics/calibration.py`, `api/services/calibration.py`).
 
 Every run writes an `AgentRun` (inputs, flags, constraints, solver result, decision)
-and `AuditLog` rows; the coach's "Match commentary" renders them in plain language.
+and `AuditLog` rows; the coach's Agent log ("Match commentary") renders them in plain language.
 
 ## Planner model (CP-SAT)
 

@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from api import clock
 from api.db import get_db
-from api.deps import CurrentUser, age_on, audit, current_user
+from api.deps import CurrentUser, age_on, audit, current_user, record_self_consent
 from api.security import create_token, hash_password, verify_password
 from api.services import accounts, mfa
 from api.settings import settings
@@ -223,6 +223,7 @@ def register(body: Register, db: Session = Depends(get_db)) -> dict:
         player.guardians.append(g)
         invite = g.invite_code
     db.flush()
+    record_self_consent(db, player, today)
     pathway.replan_from(db, player, today, "signup")
     accounts.send_verify(db, acc)
     if invite:
@@ -317,6 +318,9 @@ def set_password(body: SetPassword, db: Session = Depends(get_db)) -> dict:
     acc.password_hash = hash_password(body.password)
     acc.token_version = (acc.token_version or 0) + 1
     acc.email_verified_at = acc.email_verified_at or now
+    if tok.purpose == "invite" and acc.player_id is not None:
+        # A club player accepting the invitation agrees for themselves if they are old enough
+        record_self_consent(db, db.get(Player, acc.player_id), clock.today())
     with _failed_lock:
         _failed.pop(acc.email, None)
     audit(db, CurrentUser(acc, acc.role), "set_password", "user_account", acc.id, via=tok.purpose)

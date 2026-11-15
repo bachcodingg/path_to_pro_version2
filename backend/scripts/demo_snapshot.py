@@ -34,7 +34,8 @@ from api.services.seed import DEMO_PASSWORD, seed  # noqa: E402
 PLAYERS = ["p15@demo.pathtopro", "p03@demo.pathtopro", "p07@demo.pathtopro", "dual@demo.pathtopro", "amateur@demo.pathtopro"]
 STAFF = ["coach@demo.pathtopro", "physio@demo.pathtopro"]
 SECOND_TEAM_COACH = "mencoach@demo.pathtopro"
-GUARDIANS = ["guardian02@demo.pathtopro"]
+# The parent of the story's tired player (Leon, 14): under 16, so the consent switches are theirs
+GUARDIANS = ["guardian15@demo.pathtopro"]
 
 
 def main(out: Path) -> None:
@@ -92,7 +93,7 @@ def main(out: Path) -> None:
                 "/api/me/tips",
             ]
             paths += ["/api/me/pathway"] if me["pathway"] == "amateur" else ["/api/me/card", "/api/me/roadmap"]
-            paths += ["/api/me/finance"]
+            paths += ["/api/me/finance", "/api/me/consent"]
             responses = {p: get(h, p) for p in paths}
             for a in responses["/api/me/career"]["recent"][:3]:  # line-ups of the last matches
                 responses[f"/api/me/matches/{a['match_id']}"] = get(h, f"/api/me/matches/{a['match_id']}")

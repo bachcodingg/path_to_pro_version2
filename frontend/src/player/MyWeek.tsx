@@ -37,6 +37,12 @@ export function MyWeek() {
 
   const days = compare > 0.5 ? data.last_week : data.days;
   const total = (w: PlanDay[]) => w.reduce((s, d) => s + d.load, 0);
+  // A player reads the week against last week, not as a number of load units
+  const vsLastWeek = (now: number, last: number) => {
+    if (last <= 0) return "Your planned week";
+    const pct = Math.round((100 * (now - last)) / last);
+    return Math.abs(pct) < 5 ? "About as much training as last week" : pct < 0 ? `${-pct}% lighter than last week` : `${pct}% more than last week`;
+  };
 
   function startPress(d: PlanDay) {
     pressTimer.current = window.setTimeout(() => setDetail(d), 450);
@@ -53,7 +59,7 @@ export function MyWeek() {
         </Button>
         <div className="text-center">
           <h1 className="text-xl font-extrabold">{offset === 0 ? "This week" : offset === 1 ? "Next week" : `Week of ${fmtDay(data.start, { day: "numeric", month: "short" })}`}</h1>
-          <p className="text-ink-2 text-sm">{compare > 0.5 ? "Showing last week" : `Planned load ${total(data.days)} AU`}</p>
+          <p className="text-ink-2 text-sm">{compare > 0.5 ? "Showing last week" : vsLastWeek(total(data.days), total(data.last_week))}</p>
         </div>
         <Button variant="ghost" size="sm" onClick={() => setOffset(offset + 1)} aria-label="Next week">
           <ChevronRight className="h-5 w-5" />
@@ -127,8 +133,8 @@ export function MyWeek() {
               />
             </label>
             <div className="text-ink-2 flex justify-between text-sm">
-              <span>This week {total(data.days)} AU</span>
-              <span>Last week {total(data.last_week)} AU</span>
+              <span>This week: {total(data.days)} load points</span>
+              <span>Last week: {total(data.last_week)}</span>
             </div>
           </Card>
 
@@ -180,8 +186,8 @@ export function MyWeek() {
                 <ul className="mt-2 space-y-1 text-sm">
                   <li>Effort: {detail.rpe} / 10</li>
                   <li>{detail.kind === "match" ? "Planned minutes" : "Duration"}: {detail.minutes} min</li>
-                  <li>Planned load: {detail.load} AU</li>
-                  {detail.actual_load != null && <li className={cn(detail.actual_load > detail.load * 1.2 && "text-caution")}>Actual load: {Math.round(detail.actual_load)} AU</li>}
+                  <li>Planned load: {detail.load} points (minutes × effort)</li>
+                  {detail.actual_load != null && <li className={cn(detail.actual_load > detail.load * 1.2 && "text-caution")}>Actual load: {Math.round(detail.actual_load)} points</li>}
                 </ul>
               )}
               {detail.content && (

@@ -89,11 +89,11 @@ export function RatingHistory({ data, dark = true }: { data: RatingHistoryData; 
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={points} margin={{ top: 8, right: 12, left: -18, bottom: 0 }}>
             <CartesianGrid stroke={grid} />
-            <XAxis dataKey="label" fontSize={10} stroke={axis} interval="preserveStartEnd" minTickGap={8} />
+            <XAxis dataKey="label" fontSize={11} stroke={axis} interval="preserveStartEnd" minTickGap={8} />
             <YAxis domain={[5, 9]} ticks={[5, 6, 6.5, 7, 8, 9]} fontSize={11} stroke={axis} />
             <ReferenceLine y={7} stroke="#1fa05a" strokeDasharray="2 4" />
             <Tooltip content={<Tip />} />
-            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Legend wrapperStyle={{ fontSize: 12 }} formatter={(v) => <span style={{ color: "var(--ink-2)" }}>{v}</span>} />
             <Line name="Match rating" dataKey="rating" stroke={dark ? "rgba(255,255,255,0.35)" : "#9aa5b8"} strokeWidth={1.5} dot={<Dot />} isAnimationActive={false} />
             <Line name="5-match average" dataKey="rolling" stroke="var(--brand-300)" strokeWidth={3} dot={false} isAnimationActive={false} />
             {progress.slope_per_match != null && (

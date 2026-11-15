@@ -1,7 +1,10 @@
 // "Dressing room": players x last 14 days, cell = readiness. Ring = PHV window, triangle = load flag.
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { api } from "../shared/api";
+import { api, ApiError } from "../shared/api";
+import { useAuth } from "../shared/auth";
 import { Link } from "react-router-dom";
+import { useMediaQuery } from "../shared/useMediaQuery";
 import type { Heatmap as HeatmapData, HeatmapRow } from "../shared/types";
 import { useApi } from "../shared/useApi";
 import { PageHeader } from "../shared/PageHeader";
@@ -43,6 +46,8 @@ export function Heatmap() {
   const qs = new URLSearchParams({ ...(group && { age_group: group }), ...(flag && { flag }) }).toString();
   const { data, error, loading, reload } = useApi<HeatmapData>(`/api/coach/heatmap${qs ? `?${qs}` : ""}`);
   const [sel, setSel] = useState<{ row: HeatmapRow; i: number } | null>(null);
+  // On a phone the table scrolls sideways, so today comes first instead of fourteenth
+  const narrow = useMediaQuery("(max-width: 767px)");
 
   if (loading && !data) return <PageSkeleton label="Loading the dressing room" />;
   if (error || !data) return <ErrorNote message={error ?? "No data"} onRetry={reload} />;
@@ -53,14 +58,17 @@ export function Heatmap() {
   const rows = [...data.players]
     .filter((r) => !missingOnly || !checkedToday(r))
     .sort(sort === "risk" ? byRisk : (a, b) => a.name.localeCompare(b.name));
+  const order = data.dates.map((_, i) => i);
+  if (narrow) order.reverse();
   return (
     <div className="space-y-4">
       <PageHeader
-        eyebrow="Squad"
-        title="Dressing room"
-        subtitle={`Readiness over the last 14 days · today ${fmtDay(data.today, { weekday: "long", day: "numeric", month: "short" })}`}
+        eyebrow="Dressing room"
+        title="Squad readiness"
+        subtitle={`The last 14 days · today ${fmtDay(data.today, { weekday: "long", day: "numeric", month: "short" })}`}
         bottom={<SquadPulse rows={data.players} today={data.today} />}
       />
+      {!group && !flag && <NeedsYou rows={data.players} onShowRecover={() => setFlag("readiness_red")} />}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Legend />
         <div className="flex flex-wrap gap-2">
@@ -100,7 +108,7 @@ export function Heatmap() {
           <thead>
             <tr>
               <th className="bg-surface sticky left-0 p-2 text-left">Player</th>
-              {data.dates.map((d) => (
+              {order.map((i) => data.dates[i]).map((d) => (
                 <th key={d} className={cn("p-1 text-center font-medium", d === data.today && "bg-pitch-50 text-pitch-300 font-bold dark:bg-white/5")}>
                   <div>{d === data.today ? "Today" : fmtDay(d)}</div>
                   <div className={cn("text-xs", d === data.today ? "text-pitch-300" : "text-ink-2")}>{d.slice(8)}</div>
@@ -123,7 +131,8 @@ export function Heatmap() {
                     </span>
                   )}
                 </th>
-                {row.cells.map((c, i) => {
+                {order.map((i) => {
+                  const c = row.cells[i];
                   const isToday = c.date === data.today;
                   const held = heldBack(c.band, c.score);
                   const missed = isToday && c.score == null;
@@ -172,6 +181,61 @@ export function Heatmap() {
         </Card>
       )}
     </div>
+  );
+}
+
+interface Attention {
+  approvals: number;
+  plan_changes: number;
+  escalations: number;
+}
+
+// What is waiting for a decision, before any chart: plan changes to approve, reports from
+// players that a person has to answer, and who is in Recover
+function NeedsYou({ rows, onShowRecover }: { rows: HeatmapRow[]; onShowRecover: () => void }) {
+  const { user } = useAuth();
+  const { data } = useApi<Attention>("/api/coach/attention");
+  const recover = rows.filter((r) => latest(r)?.band === "red").length;
+  if (!data) return null;
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  const goals = data.approvals - data.plan_changes;
+  const row = "tap flex w-full items-center justify-between gap-3 px-4 py-2 text-left font-semibold hover:bg-surface-2";
+  const arrow = <ChevronRight className="text-ink-2 h-5 w-5 shrink-0" aria-hidden />;
+  const items = [
+    user?.role === "coach" && data.plan_changes > 0 && (
+      <Link to="/coach/inbox" className={row}>
+        {plural(data.plan_changes, "plan change", "plan changes")} to approve {arrow}
+      </Link>
+    ),
+    user?.role === "coach" && goals > 0 && (
+      <Link to="/coach/inbox" className={row}>
+        {plural(goals, "new development goal", "new development goals")} to confirm {arrow}
+      </Link>
+    ),
+    data.escalations > 0 && (
+      <Link to="/physio" className={row}>
+        {plural(data.escalations, "report from a player is", "reports from players are")} waiting for an answer {arrow}
+      </Link>
+    ),
+    recover > 0 && (
+      <button onClick={onShowRecover} className={row}>
+        {plural(recover, "player is", "players are")} in Recover {arrow}
+      </button>
+    ),
+  ].filter(Boolean);
+  return (
+    <Card className="p-0" role="region" aria-label="Needs you">
+      <h2 className="font-display px-4 pt-3 pb-1 text-lg font-extrabold">Needs you</h2>
+      {items.length === 0 ? (
+        <p className="text-ink-2 px-4 pb-3 text-sm">Nothing is waiting for you right now.</p>
+      ) : (
+        <ul className="divide-[color:var(--line)] divide-y">
+          {items.map((it, i) => (
+            <li key={i}>{it}</li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }
 
@@ -245,9 +309,15 @@ function Legend() {
 
 function RateButtons({ playerId, day }: { playerId: string; day: string }) {
   const [saved, setSaved] = useState<string | null>(null);
+  const [failed, setFailed] = useState<string | null>(null);
   async function rate(band: "green" | "amber" | "red") {
-    await api(`/api/coach/players/${playerId}/rating`, { method: "POST", json: { band, day } });
-    setSaved(band);
+    setFailed(null);
+    try {
+      await api(`/api/coach/players/${playerId}/rating`, { method: "POST", json: { band, day } });
+      setSaved(band);
+    } catch (e) {
+      setFailed(e instanceof ApiError ? e.message : "Could not save your rating. Try again.");
+    }
   }
   return (
     <div className="flex flex-wrap items-center gap-2" key={playerId + day}>
@@ -262,7 +332,8 @@ function RateButtons({ playerId, day }: { playerId: string; day: string }) {
           <BandIcon band={b} className="h-4 w-4" /> {b === "green" ? "Ready" : b === "amber" ? "Take care" : "Recover"}
         </button>
       ))}
-      {saved && <span className="text-ink-2 text-xs" role="status">Saved. Used to calibrate the score.</span>}
+      {saved && !failed && <span className="text-ink-2 text-xs" role="status">Saved. Used to calibrate the score.</span>}
+      {failed && <span className="text-recover text-xs" role="alert">{failed}</span>}
     </div>
   );
 }

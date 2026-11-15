@@ -1,18 +1,52 @@
 // Account settings for every role: email confirmation, password, signing out everywhere,
 // and deleting the account where the person may do that themselves.
 import { ArrowLeft, CheckCircle2, LogOut, MailWarning, Trash2 } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api, ApiError, DEMO } from "./api";
 import { homeFor, useAuth } from "./auth";
 import { Connections, TwoStep } from "./AccountConnections";
 import { Field, input, Shell } from "./Register";
-import type { User } from "./types";
-import { Button, SectionTitle } from "./ui";
+import type { ConsentView, User } from "./types";
+import { Button, SectionTitle, Switch } from "./ui";
 import { useApi } from "./useApi";
 
 function message(err: unknown): string {
   return err instanceof ApiError ? err.message : "Cannot reach the server";
+}
+
+// What PathToPro may store about a player's health and fitness. From 16 the player decides
+// here; before that a parent does, in the family view, and the player sees what was agreed.
+function OwnData({ onNote }: { onNote: (n: { ok: boolean; text: string } | null) => void }) {
+  const consent = useApi<ConsentView>("/api/me/consent");
+  if (!consent.data) return null;
+  const own = consent.data.self_managed;
+  async function toggle(dataType: string, granted: boolean) {
+    onNote(null);
+    try {
+      consent.setData(await api<ConsentView>("/api/me/consent", { method: "PUT", json: { data_type: dataType, granted } }));
+    } catch (err) {
+      onNote({ ok: false, text: message(err) });
+    }
+  }
+  return (
+    <section>
+      <SectionTitle>Your data</SectionTitle>
+      <p className="text-ink-2 mb-1 text-sm">
+        {own
+          ? "You decide what PathToPro stores about your health and fitness. Switch a kind of data off and nothing new of it is stored. You can switch it back on any time."
+          : "Until you are 16 a parent decides this in the family view. This is what they agreed to."}
+      </p>
+      <ul className="divide-[color:var(--line)] divide-y">
+        {consent.data.items.map((i) => (
+          <li key={i.data_type} className="flex items-center justify-between gap-3 py-1">
+            <span className="text-sm">{i.text}</span>
+            <Switch label={i.text} checked={i.granted} disabled={!own} onChange={(on) => toggle(i.data_type, on)} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }
 
 export function Account() {
@@ -25,6 +59,10 @@ export function Account() {
   const [next, setNext] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
+
+  useEffect(() => {
+    document.title = "Your account · PathToPro";
+  }, []);
 
   if (!user) return null;
 
@@ -113,6 +151,8 @@ export function Account() {
             </div>
           )}
         </section>
+
+        {user.role === "player" && <OwnData onNote={setNote} />}
 
         <section>
           <SectionTitle>Password</SectionTitle>

@@ -1,6 +1,6 @@
-import { type LucideIcon, CalendarDays, CalendarRange, CalendarCheck, ClipboardList, Euro, Gauge, Grid3x3, LogOut, MessageSquareText, Play, Settings, Star, Stethoscope, Users } from "lucide-react";
-import { useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { type LucideIcon, CalendarDays, CalendarRange, CalendarCheck, ClipboardList, Euro, Gauge, Grid3x3, LogOut, Menu, MessageSquareText, Play, Settings, Star, Stethoscope, Users, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { api } from "../shared/api";
 import { AppLink } from "../shared/AppLink";
 import { useAuth } from "../shared/auth";
@@ -11,6 +11,20 @@ import { useDocumentTitle } from "../shared/useDocumentTitle";
 
 // Grouped the way staff think about the week; built per call so labels follow the language
 type NavItem = { to: string; label: string; icon: LucideIcon; end?: boolean; coachOnly?: boolean };
+
+// A phone shows the three pages a role opens every day as tabs; everything else is under More
+const PHONE_TABS: Record<string, [string, string][]> = {
+  coach: [
+    ["/coach", "Squad"],
+    ["/coach/inbox", "Approvals"],
+    ["/coach/pitch", "Training"],
+  ],
+  physio: [
+    ["/physio", "Queue"],
+    ["/coach", "Squad"],
+    ["/coach/pitch", "Training"],
+  ],
+};
 const nav = (): { group: string; items: NavItem[] }[] => [
   {
     group: "Squad",
@@ -50,6 +64,23 @@ export function CoachLayout() {
   const initials = (user?.name ?? "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
   const [running, setRunning] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const { pathname } = useLocation();
+  const [more, setMore] = useState(false);
+  const [waiting, setWaiting] = useState(0); // approvals waiting, shown on the phone tab
+  const tabs = (PHONE_TABS[user?.role ?? "coach"] ?? PHONE_TABS.coach).map(([to, short]) => ({ ...NAV.find((n) => n.to === to)!, short }));
+  const rest = GROUPS.map((g) => ({ ...g, items: g.items.filter((n) => !tabs.some((x) => x.to === n.to)) })).filter((g) => g.items.length);
+  const inMore = rest.some((g) => g.items.some((n) => pathname === n.to || pathname.startsWith(`${n.to}/`)));
+  useEffect(() => {
+    setMore(false);
+    if (user?.role !== "coach") return;
+    let live = true;
+    api<{ approvals: number }>("/api/coach/attention")
+      .then((a) => live && setWaiting(a.approvals))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [pathname, user?.role]);
 
   async function runNightly() {
     setRunning(true);
@@ -131,7 +162,7 @@ export function CoachLayout() {
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="app-rail sticky top-0 z-20 md:hidden">
-          <div className="flex items-center justify-between px-4 pt-3">
+          <div className="flex items-center justify-between px-4 py-2">
             <span className="flex items-center gap-2 text-white">
               <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-7 w-7" />
               <span className="brandmark text-lg">PathToPro</span>
@@ -146,24 +177,92 @@ export function CoachLayout() {
               </button>
             </span>
           </div>
-          <nav className="no-scrollbar flex gap-1 overflow-x-auto px-2 pb-1" aria-label="Staff navigation">
-            {NAV.map(({ to, label, end }) => (
-              <NavLink
-                key={to}
-                to={to}
-                end={end}
-                className={({ isActive }) =>
-                  cn("tap shrink-0 border-b-[3px] px-3 py-2 text-sm font-bold", isActive ? "border-pitch-300 text-white" : "border-transparent text-white/95")
-                }
-              >
-                {label}
-              </NavLink>
-            ))}
-          </nav>
         </div>
-        <main id="main" tabIndex={-1} className="min-w-0 flex-1 p-4 outline-none md:p-6">
+        <main id="main" tabIndex={-1} className="min-w-0 flex-1 p-4 pb-28 outline-none md:p-6">
           <Outlet />
         </main>
+        {/* Phone: three tabs and More, in thumb reach, instead of a strip of eleven to scroll */}
+        {more && (
+          <div className="fixed inset-0 z-30 md:hidden">
+            <button className="absolute inset-0 bg-black/50" aria-label="Close the menu" onClick={() => setMore(false)} />
+            <div
+              id="staff-more"
+              role="dialog"
+              aria-label="More pages"
+              className="app-rail absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-2xl px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] text-white"
+              onKeyDown={(e) => e.key === "Escape" && setMore(false)}
+            >
+              <div className="mb-1 flex items-center justify-between px-2">
+                <p className="font-display text-lg font-extrabold">More</p>
+                <button className="tap flex items-center justify-center" aria-label="Close the menu" onClick={() => setMore(false)}>
+                  <X className="h-5 w-5" aria-hidden />
+                </button>
+              </div>
+              {rest.map((g) => (
+                <div key={g.group} className="mb-2">
+                  <p className="px-3 text-[13px] font-bold text-white/70">{g.group}</p>
+                  {g.items.map(({ to, label, icon: Icon, end }) => (
+                    <NavLink
+                      key={to}
+                      to={to}
+                      end={end}
+                      onClick={() => setMore(false)}
+                      className={({ isActive }) =>
+                        cn("tap flex items-center gap-3 rounded-md px-3 py-2 text-[15px] font-semibold", isActive ? "bg-pitch-300 text-pitch-950" : "text-pitch-100")
+                      }
+                    >
+                      <Icon className="h-[18px] w-[18px]" aria-hidden /> {label}
+                    </NavLink>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <nav className="app-rail border-line fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] md:hidden" aria-label="Staff navigation">
+          <ul className="mx-auto grid max-w-md grid-cols-4">
+            {tabs.map(({ to, short, label, icon: Icon, end }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  end={end}
+                  aria-label={label}
+                  className={({ isActive }) =>
+                    cn(
+                      "tap relative flex flex-col items-center justify-center gap-0.5 py-2 text-xs leading-tight font-semibold",
+                      isActive && !more ? "text-pitch-300 before:bg-pitch-300 before:absolute before:inset-x-2 before:top-0 before:h-1" : "text-pitch-100",
+                    )
+                  }
+                >
+                  <span className="relative">
+                    <Icon className="h-5 w-5" aria-hidden />
+                    {to === "/coach/inbox" && waiting > 0 && (
+                      <span className="bg-caution absolute -top-1.5 -right-3 min-w-[1.15rem] rounded-full px-1 text-center text-xs leading-[1.15rem] font-extrabold text-amber-950">
+                        {waiting}
+                        <span className="sr-only"> waiting</span>
+                      </span>
+                    )}
+                  </span>
+                  {short}
+                </NavLink>
+              </li>
+            ))}
+            <li>
+              <button
+                onClick={() => setMore(!more)}
+                aria-expanded={more}
+                aria-controls="staff-more"
+                className={cn(
+                  "tap relative flex w-full flex-col items-center justify-center gap-0.5 py-2 text-xs leading-tight font-semibold",
+                  more || inMore ? "text-pitch-300 before:bg-pitch-300 before:absolute before:inset-x-2 before:top-0 before:h-1" : "text-pitch-100",
+                )}
+              >
+                <Menu className="h-5 w-5" aria-hidden />
+                More
+              </button>
+            </li>
+          </ul>
+        </nav>
       </div>
     </div>
   );

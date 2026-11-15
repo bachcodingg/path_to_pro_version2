@@ -10,7 +10,7 @@ import type { Card as CardData, GymProgramme, PlanDay, Position, Roadmap, Status
 import { AXIS, GRID, TOOLTIP } from "../shared/chart";
 import { useApi } from "../shared/useApi";
 import { PageHeader, Tabs } from "../shared/PageHeader";
-import { BAND_TEXT, BandIcon, Button, Card, Chip, ErrorNote, SectionTitle, Spinner, cn, fmtDay, intensityClass } from "../shared/ui";
+import { BAND_TEXT, BandIcon, Button, Card, Chip, ErrorNote, SectionTitle, Spinner, cn, fmtDay, fmtValue, intensityClass, ordinal } from "../shared/ui";
 
 const BAND_RING = { green: "ring-ready", amber: "ring-caution", red: "ring-recover" } as const;
 const initials = (name: string) =>
@@ -137,7 +137,7 @@ export function PlayerProfile() {
           </Card>
         </section>
         <section>
-          <SectionTitle>Tests (bio-banded percentile)</SectionTitle>
+          <SectionTitle>Tests, against players at the same stage of growth</SectionTitle>
           <Card className="space-y-2">
             {data.card.attributes.map((a) => (
               <div key={a.kpi} className="flex items-center gap-3">
@@ -145,8 +145,8 @@ export function PlayerProfile() {
                 <div className="bg-surface-2 h-2.5 flex-1 rounded-full">
                   <div className="bg-pitch-500 h-full rounded-full" style={{ width: `${a.bio_percentile}%` }} />
                 </div>
-                <span className="w-24 text-right text-sm">
-                  {a.value} {a.unit} · {a.bio_percentile}
+                <span className="w-32 text-right text-sm">
+                  {fmtValue(a.value, a.unit)} {a.unit} · {ordinal(Math.round(a.bio_percentile))}
                 </span>
               </div>
             ))}

@@ -17,7 +17,7 @@ import yaml
 from pydantic import BaseModel, Field
 
 from agents.llm import Call, LLMBackend, Tool, complete_with_retry
-from agents.rules import KPI_LABEL, DevGoal
+from agents.rules import KPI_LABEL, KPI_UNIT, DevGoal
 from analytics.maturation import MaturityStatus
 from analytics.norms import NormTable
 
@@ -128,9 +128,12 @@ def _rule_feedback(kpis: list[KpiStatus], goals: list[DevGoal]) -> str:
         return "Great consistency this week. Keep building on your strengths."
     k = next(k for k in kpis if k.kpi == goals[0].kpi)
     label = KPI_LABEL.get(k.kpi, k.kpi)
+    unit = f" {KPI_UNIT[k.kpi]}" if k.kpi in KPI_UNIT else ""
+    # The player reads this: their own result and the next step, not a rank. The percentile
+    # is in the goal's data for the coach.
     return (
-        f"This block focuses on your {label}: you're at the {k.bio_percentile:.0f}th percentile for players "
-        f"at your stage of growth, and the 4-week target is {k.target_value}. "
+        f"This block focuses on your {label}, the area with the most room to grow right now. "
+        f"Your last result was {k.value:g}{unit} and the 4-week target is {k.target_value:g}{unit}. "
         "Quality beats quantity, so give every rep full effort and rest well between them."
     )
 

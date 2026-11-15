@@ -23,13 +23,13 @@ app (PWA). Sign-up, club setup, emails and plain-words coach instructions need t
 
 | Demo account | Shows |
 | --- | --- |
-| Leon, U15 (tired, growth zone) | Check-in, Today, why-cards, growth zone, position gym session, ball skills for a striker (growth-zone version), match tips |
+| Leon, U15 (tired, growth zone) | Check-in, Today (one sentence on what today is about; a note under the session while his lighter plan waits for the coach), why-cards, growth zone, position gym session, ball skills for a striker (growth-zone version), match tips |
 | Dual-squad player (U19 + men's team) | Dual registration: 90 minutes shared over a Saturday + Sunday double; Career tab with ratings; match diary |
 | Self-guided player | Levels: log a wall-pass test of 18+ and she moves up to level 3 |
-| Coach | Heatmap, approval inbox, training pitch, match ratings, tactics board, profile with gym preview and instruction box, calibration; a link to the Pro League app (below) |
+| Coach | Squad readiness with a "Needs you" list, approvals (most at risk first, the reason in plain words, the load change, the days that change), training pitch, match ratings, tactics board, profile with gym preview and instruction box, calibration; a link to the Pro League app (below) |
 | Any account | **Pro League Data Tracking**, a separate app at `/leagues/` with the same account (its own page, icon, colours and install). Player analysis: full squads of Real Madrid, Barcelona, PSG, both Manchester clubs, Chelsea, Liverpool, Arsenal and Bayern and the best player of every other club, with real photos, percentiles and shot maps (StatsBomb events; 2024/25 and 2025/26 season totals from API-Football once imported); every club's real crest. Team analysis: La Liga, Premier League and Ligue 1 2015/16, Leverkusen's 2023/24 Bundesliga season, Champions League finals 2004-2019: how a team passes, shoots, defends and takes set pieces, player by player; tables with form; every result with a match centre |
 | Men's team coach | Second team's view of the dual-registered players (sees, but the primary coach approves) |
-| Physio, Guardian | Escalation queue; consent per data type |
+| Physio, Leon's parent | Escalation queue; the week in plain words (normal or lighter, why, who decides), the schedule, consent per data type |
 
 ## Deploy the full system (Render, free)
 
@@ -146,11 +146,11 @@ above the fold-to-fold noise. Demo ratings are synthetic.
 ## Tests
 
 ```bash
-cd backend && pytest                      # 257 unit, scenario and API tests
+cd backend && pytest                      # 277 unit, scenario and API tests
 cd backend && python -m eval              # evaluation report (seed 2026) -> eval_results/
 cd backend && python -m eval.seeds        # 10-seed comparison with confidence intervals
-cd frontend && npm test                   # Vitest (8 component tests)
-cd frontend && npx playwright test        # 30 end-to-end tests (API on :8000, web on :5173)
+cd frontend && npm test                   # Vitest (23 component tests)
+cd frontend && npx playwright test        # 34 end-to-end tests (API on :8000, web on :5173)
 ```
 
 All academy demo data is synthetic. No real player data is stored. Benchmarks and norms are

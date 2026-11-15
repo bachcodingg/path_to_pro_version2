@@ -66,6 +66,17 @@ export function Chip({ children, tone = "neutral" }: { children: ReactNode; tone
   );
 }
 
+// An on/off switch with a 44 px touch area; `label` is what a screen reader announces
+export function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange: (on: boolean) => void; label: string; disabled?: boolean }) {
+  return (
+    <label className={cn("tap relative inline-flex shrink-0 items-center justify-center", disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer")}>
+      <input type="checkbox" className="peer sr-only" checked={checked} disabled={disabled} onChange={(e) => onChange(e.target.checked)} aria-label={label} />
+      <span className="peer-checked:bg-pitch-500 peer-focus-visible:ring-pitch-300 bg-ink-2/40 h-7 w-12 rounded-full transition peer-focus-visible:ring-4" />
+      <span className="absolute left-1 h-5 w-5 rounded-full bg-white transition peer-checked:translate-x-5" />
+    </label>
+  );
+}
+
 export const BAND_TEXT: Record<Band, string> = { green: "Ready", amber: "Take care", red: "Recover" };
 export const BAND_BG: Record<Band, string> = {
   green: "bg-ready",
@@ -184,6 +195,10 @@ export function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+// Test results at the precision they are measured with: metres whole, centimetres to one
+// decimal, times to hundredths
 export function fmtValue(v: number, unit: string): string {
-  return unit === "m" ? String(Math.round(v)) : String(v);
+  if (unit === "m") return String(Math.round(v));
+  if (unit === "cm") return String(Math.round(v * 10) / 10);
+  return String(Math.round(v * 100) / 100);
 }

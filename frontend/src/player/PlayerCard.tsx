@@ -25,9 +25,12 @@ export function PlayerCard() {
 
   return (
     <div className="space-y-4 pt-2">
-      <Link to="/player/road" className="text-pitch-300 flex items-center justify-end gap-1 text-sm font-semibold">
-        <Map className="h-4 w-4" aria-hidden /> Road to Pro
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-extrabold">My card</h1>
+        <Link to="/player/road" className="tap text-pitch-300 flex items-center gap-1 text-sm font-semibold">
+          <Map className="h-4 w-4" aria-hidden /> Road to Pro
+        </Link>
+      </div>
       {/* Wide screens: the card on the left, the tests beside it */}
       <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
         <div className="space-y-5">

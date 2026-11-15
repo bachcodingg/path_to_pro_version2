@@ -58,6 +58,7 @@ export function CheckIn() {
   return (
     <div className="mx-auto max-w-xl space-y-4 pt-2">
       <div>
+        <p className="text-pitch-300 text-sm font-bold">Pre-match warm-up</p>
         <h1 className="text-2xl font-extrabold">{t("checkin.title")}</h1>
         <p className="text-ink-2">{t("checkin.subtitle")}</p>
       </div>

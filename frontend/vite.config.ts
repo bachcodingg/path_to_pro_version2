@@ -55,6 +55,11 @@ export default defineConfig({
             options: { cacheName: "leagues-pages", networkTimeoutSeconds: 4 },
           },
           {
+            urlPattern: ({ url }) => url.pathname.endsWith("/demo/snapshot.json"),
+            handler: "NetworkFirst",
+            options: { cacheName: "demo-data", networkTimeoutSeconds: 4 },
+          },
+          {
             urlPattern: ({ url }) => url.pathname.includes("/api/me/"),
             handler: "NetworkFirst",
             options: { cacheName: "player-api", networkTimeoutSeconds: 4 },

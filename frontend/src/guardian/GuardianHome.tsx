@@ -1,18 +1,23 @@
-// Guardian: weekly summary card, the child's training and match schedule, consent switches per data type, data export and delete.
-import { CalendarDays, Download, LogOut, Settings, ShieldAlert, Trash2 } from "lucide-react";
-import { useState } from "react";
+// Guardian: the week in plain words, the child's training and match schedule, the week's
+// numbers, consent switches per data type (while the child is under 16), data export and delete.
+import { CalendarDays, CheckCircle2, Download, Hourglass, Info, LogOut, Settings, ShieldAlert, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { api, download } from "../shared/api";
+import { api, ApiError, download } from "../shared/api";
 import { useAuth } from "../shared/auth";
 import { eur } from "../shared/money";
 import { useApi } from "../shared/useApi";
-import type { SessionKind } from "../shared/types";
-import { Button, Card, ErrorNote, SectionTitle, Spinner, cn, fmtDay } from "../shared/ui";
+import type { ConsentView, SessionKind } from "../shared/types";
+import { Button, Card, ErrorNote, SectionTitle, Spinner, Switch, cn, fmtDay } from "../shared/ui";
 
 interface Child {
   id: string;
   name: string;
   age: number;
+}
+interface WeekNote {
+  state: "normal" | "watch" | "pending" | "changed";
+  text: string;
 }
 interface Summary {
   name: string;
@@ -21,6 +26,7 @@ interface Summary {
   avg_sleep_h: number | null;
   goals: { label: string; progress: number }[];
   streak: number;
+  week_note?: WeekNote | null;
   alerts?: { id: string; kind: string; text: string; created_at: string }[];
 }
 interface ScheduleDay {
@@ -34,80 +40,100 @@ interface Schedule {
   today: string;
   weeks: { start: string; days: ScheduleDay[] }[];
 }
-interface Consent {
-  age: number;
-  items: { data_type: string; text: string; granted: boolean }[];
-}
 
 export function GuardianHome() {
   const { user, logout } = useAuth();
   const kids = useApi<Child[]>("/api/guardian/children");
+  useEffect(() => {
+    document.title = "Family · PathToPro";
+  }, []);
   return (
     <div className="display-headings app-bg min-h-full">
-      <header className="hero flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-2">
-          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-8 w-8" />
-          <span className="brandmark text-xl">
-            PathToPro <span className="text-pitch-300">· Family</span>
+      <header className="hero flex items-center justify-between gap-2 px-4 py-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-8 w-8 shrink-0" />
+          {/* A phone has room for one word next to the sign-out: the one that says where you are */}
+          <span className="brandmark truncate text-xl">
+            <span className="hidden sm:inline">PathToPro · </span>
+            <span className="text-pitch-300">Family</span>
           </span>
         </div>
-        <span className="flex items-center gap-1">
+        <span className="flex shrink-0 items-center gap-1">
+          <span className="mr-1 hidden text-sm sm:inline">{user?.name}</span>
           <Link to="/account" className="tap flex h-11 w-11 items-center justify-center" aria-label="Account">
-            <Settings className="h-4 w-4" aria-hidden />
+            <Settings className="h-5 w-5" aria-hidden />
           </Link>
-          <button onClick={logout} className="tap flex items-center gap-1 text-sm">
-            {user?.name} <LogOut className="h-4 w-4" aria-hidden />
+          <button onClick={logout} className="tap flex items-center gap-1.5 text-sm font-semibold">
+            <LogOut className="h-4 w-4" aria-hidden /> Sign out
           </button>
         </span>
       </header>
       <main className="mx-auto max-w-2xl space-y-6 p-4 lg:max-w-5xl lg:p-6">
         {kids.loading && <Spinner />}
         {kids.error && <ErrorNote message={kids.error} onRetry={kids.reload} />}
+        {kids.data?.length === 0 && <Card className="text-ink-2">No child is linked to this account yet. Use the invite code your child got at sign-up.</Card>}
         {kids.data?.map((k) => <ChildPanel key={k.id} child={k} />)}
       </main>
     </div>
   );
 }
 
+const NOTE_ICON = { normal: CheckCircle2, watch: Info, pending: Hourglass, changed: CheckCircle2 } as const;
+
 function ChildPanel({ child }: { child: Child }) {
   const summary = useApi<Summary>(`/api/guardian/children/${child.id}/summary`);
-  const consent = useApi<Consent>(`/api/guardian/children/${child.id}/consent`);
+  const consent = useApi<ConsentView>(`/api/guardian/children/${child.id}/consent`);
   const money = useApi<{ contracts: { id: string; title: string; amount_cents: number; direction: string; ends_on: string | null }[]; fees_paid_cents: number; fees_due_cents: number }>(
     `/api/guardian/children/${child.id}/finance`,
   );
   const [confirm, setConfirm] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [consentError, setConsentError] = useState<string | null>(null);
+  const first = child.name.split(" ")[0];
 
   async function toggle(dataType: string, granted: boolean) {
-    consent.setData(await api<Consent>(`/api/guardian/children/${child.id}/consent`, { method: "PUT", json: { data_type: dataType, granted } }));
+    setConsentError(null);
+    try {
+      consent.setData(await api<ConsentView>(`/api/guardian/children/${child.id}/consent`, { method: "PUT", json: { data_type: dataType, granted } }));
+    } catch (e) {
+      setConsentError(e instanceof ApiError ? e.message : "Could not save. Check your connection and try again.");
+    }
   }
   async function seen(id: string) {
-    await api(`/api/guardian/children/${child.id}/alerts/${id}/seen`, { method: "POST" });
-    void summary.reload();
+    try {
+      await api(`/api/guardian/children/${child.id}/alerts/${id}/seen`, { method: "POST" });
+      void summary.reload();
+    } catch {
+      setMsg("Could not mark this as seen. Try again.");
+    }
   }
   async function del() {
     try {
       await api(`/api/guardian/children/${child.id}/data`, { method: "DELETE" });
       setMsg("All health data was deleted.");
       void summary.reload();
-    } catch {
-      setMsg("Nothing to delete.");
+    } catch (e) {
+      setMsg(e instanceof ApiError ? e.message : "Could not delete. Check your connection and try again.");
     }
     setConfirm(false);
   }
 
   const s = summary.data;
+  const note = s?.week_note;
+  const NoteIcon = note ? NOTE_ICON[note.state] : Info;
+  const fees = money.data?.contracts.filter((c) => c.direction === "income" && !c.ends_on) ?? [];
   return (
     <section className="space-y-3">
       <h1 className="text-2xl font-extrabold">
-        {child.name} <span className="text-ink-2 text-base font-medium">{child.age} y</span>
+        {child.name} <span className="text-ink-2 text-base font-medium">{Math.floor(child.age)} years</span>
       </h1>
+      {summary.error && <ErrorNote message={summary.error} onRetry={summary.reload} />}
       {s?.alerts?.map((a) => (
         <Card key={a.id} className="border-recover/50 flex gap-3" role="alert">
           <ShieldAlert className="text-recover h-6 w-6 shrink-0" aria-hidden />
           <div className="flex-1">
             <p>
-              <span className="font-bold">{child.name.split(" ")[0]}</span> {a.text}
+              <span className="font-bold">{first}</span> {a.text}
             </p>
             <p className="text-ink-2 mt-1 text-xs">{new Date(a.created_at).toLocaleString("en-GB", { weekday: "short", hour: "2-digit", minute: "2-digit" })}</p>
           </div>
@@ -116,8 +142,18 @@ function ChildPanel({ child }: { child: Child }) {
           </Button>
         </Card>
       ))}
+      {/* The answer to "is this a normal week?", before any numbers */}
+      {note && (
+        <Card className={cn("flex gap-3", (note.state === "pending" || note.state === "watch") && "border-caution/60")} role="region" aria-label="This week in short">
+          <NoteIcon className={cn("mt-0.5 h-6 w-6 shrink-0", note.state === "pending" || note.state === "watch" ? "text-caution" : "text-pitch-300")} aria-hidden />
+          <div>
+            <h2 className="font-display text-lg leading-tight font-extrabold">This week in short</h2>
+            <p className="mt-1">{note.text}</p>
+          </div>
+        </Card>
+      )}
       <ScheduleCard childId={child.id} />
-      {/* Wide screens: the week and fees on the left, consent and data on the right */}
+      {/* Wide screens: the week on the left, consent and data on the right */}
       <div className="space-y-5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
         <div className="space-y-5">
           {s && (
@@ -130,37 +166,24 @@ function ChildPanel({ child }: { child: Child }) {
                 </div>
                 <div>
                   <p className="text-3xl font-extrabold">{s.avg_sleep_h ?? "–"}</p>
-                  <p className="text-ink-2 text-sm">avg sleep (h)</p>
+                  <p className="text-ink-2 text-sm">hours of sleep a night</p>
                 </div>
                 <div>
                   <p className="text-3xl font-extrabold">{s.streak}</p>
-                  <p className="text-ink-2 text-sm">check-in streak</p>
+                  <p className="text-ink-2 text-sm">check-ins in a row</p>
                 </div>
               </div>
               {s.goals.map((g) => (
                 <div key={g.label} className="mt-3">
-                  <p className="text-sm font-semibold">Goal: {g.label}</p>
-                  <div className="bg-surface-2 mt-1 h-2.5 rounded-full">
-                    <div className="bg-pitch-500 h-full rounded-full" style={{ width: `${Math.max(4, g.progress * 100)}%` }} />
+                  <p className="flex justify-between text-sm font-semibold">
+                    <span>Goal: {g.label}</span>
+                    <span className="text-ink-2 font-normal">{g.progress <= 0 ? "just started" : `${Math.min(100, Math.round(g.progress * 100))}% of the way`}</span>
+                  </p>
+                  <div className="bg-surface-2 mt-1 h-2.5 rounded-full" aria-hidden>
+                    <div className="bg-pitch-500 h-full rounded-full" style={{ width: `${Math.max(4, Math.min(100, g.progress * 100))}%` }} />
                   </div>
                 </div>
               ))}
-            </Card>
-          )}
-          {money.data && money.data.contracts.some((c) => c.direction === "income" && !c.ends_on) && (
-            <Card>
-              <p className="font-bold">Fees</p>
-              {money.data.contracts
-                .filter((c) => c.direction === "income" && !c.ends_on)
-                .map((c) => (
-                  <p key={c.id} className="text-sm">
-                    {c.title}: {eur(c.amount_cents)} / month
-                  </p>
-                ))}
-              <p className="text-ink-2 mt-1 text-sm">
-                Paid this season {eur(money.data.fees_paid_cents)} ·{" "}
-                <span className={money.data.fees_due_cents > 0 ? "text-caution font-semibold" : ""}>due {eur(money.data.fees_due_cents)}</span>
-              </p>
             </Card>
           )}
         </div>
@@ -170,22 +193,23 @@ function ChildPanel({ child }: { child: Child }) {
             <Card>
               <SectionTitle>Consent</SectionTitle>
               <p className="text-ink-2 mb-2 text-sm">
-                {consent.data.age < 16
-                  ? "Your child is under the age of digital consent, so these switches are yours. You can change them any time."
-                  : "Your child is old enough to consent themselves. Switches here still apply."}
+                {consent.data.self_managed
+                  ? `${first} is 16 or older and decides this in their own account. This is what is switched on now.`
+                  : `${first} is under 16, so these switches are yours. Switch a kind of data off and nothing new of it is stored. You can change them any time.`}
               </p>
               <ul className="divide-[color:var(--line)] divide-y">
                 {consent.data.items.map((i) => (
-                  <li key={i.data_type} className="flex items-center justify-between gap-3 py-2">
+                  <li key={i.data_type} className="flex items-center justify-between gap-3 py-1">
                     <span className="text-sm">{i.text}</span>
-                    <label className="relative inline-flex cursor-pointer items-center">
-                      <input type="checkbox" className="peer sr-only" checked={i.granted} onChange={(e) => toggle(i.data_type, e.target.checked)} aria-label={i.text} />
-                      <span className="peer-checked:bg-pitch-500 peer-focus-visible:ring-pitch-300 bg-ink-2/40 h-7 w-12 rounded-full transition peer-focus-visible:ring-4" />
-                      <span className="absolute left-1 h-5 w-5 rounded-full bg-white transition peer-checked:translate-x-5" />
-                    </label>
+                    <Switch label={i.text} checked={i.granted} disabled={consent.data!.self_managed} onChange={(on) => toggle(i.data_type, on)} />
                   </li>
                 ))}
               </ul>
+              {consentError && (
+                <p role="alert" className="text-recover mt-2 text-sm font-semibold">
+                  {consentError}
+                </p>
+              )}
               <p className="text-ink-2 mt-2 text-xs">We store no location and no free-text diary. Demo data is synthetic.</p>
             </Card>
           )}
@@ -198,7 +222,7 @@ function ChildPanel({ child }: { child: Child }) {
                 <Trash2 className="h-4 w-4" aria-hidden /> Delete health data
               </Button>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm font-semibold">This cannot be undone.</span>
                 <Button variant="danger" size="sm" onClick={del}>
                   Yes, delete
@@ -214,16 +238,31 @@ function ChildPanel({ child }: { child: Child }) {
               </p>
             )}
           </Card>
+          {/* Club admin, kept apart from the child's week and well-being */}
+          {fees.length > 0 && money.data && (
+            <Card>
+              <p className="font-bold">Fees</p>
+              {fees.map((c) => (
+                <p key={c.id} className="text-sm">
+                  {c.title}: {eur(c.amount_cents)} / month
+                </p>
+              ))}
+              <p className="text-ink-2 mt-1 text-sm">
+                Paid this season {eur(money.data.fees_paid_cents)} · open {eur(money.data.fees_due_cents)}
+              </p>
+            </Card>
+          )}
         </div>
       </div>
     </section>
   );
 }
 
+// A parent's words, short enough for seven columns on a phone
 const SHORT: Record<SessionKind, string> = {
   rest: "Rest",
-  recovery: "Recovery",
-  technical: "Technique",
+  recovery: "Easy",
+  technical: "Skills",
   tactical: "Tactics",
   strength: "Gym",
   speed: "Speed",
@@ -247,7 +286,7 @@ function ScheduleCard({ childId }: { childId: string }) {
                 key={label}
                 onClick={() => setWeek(i)}
                 aria-pressed={week === i}
-                className={cn("rounded-lg px-3 py-1.5 transition", week === i ? "bg-pitch-300 text-pitch-950" : "text-ink-2 hover:text-ink")}
+                className={cn("min-h-11 rounded-lg px-3 transition", week === i ? "bg-pitch-300 text-pitch-950" : "text-ink-2 hover:text-ink")}
               >
                 {label}
               </button>
@@ -276,15 +315,15 @@ function ScheduleCard({ childId }: { childId: string }) {
                 past && "opacity-55",
               )}
             >
-              <span className="text-ink-2 text-[11px] font-bold">{fmtDay(d.date)}</span>
+              <span className="text-ink-2 text-xs font-bold">{fmtDay(d.date)}</span>
               <span className="text-lg leading-tight font-extrabold">{fmtDay(d.date, { day: "numeric" })}</span>
-              <span className={cn("mt-auto text-[11px] leading-tight font-semibold sm:text-xs", d.kind === "rest" ? "text-ink-2" : "text-ink")}>
+              <span className={cn("mt-auto max-w-full truncate text-xs leading-tight font-semibold", d.kind === "rest" ? "text-ink-2" : "text-ink")}>
                 {SHORT[d.kind] ?? d.label}
               </span>
               {d.match ? (
-                <span className="text-pitch-300 text-[11px] font-bold sm:text-xs">{d.match.time}</span>
+                <span className="text-pitch-300 text-xs font-bold">{d.match.time}</span>
               ) : (
-                d.kind !== "rest" && <span className="text-ink-2 text-[11px] sm:text-xs">{d.minutes}′</span>
+                d.kind !== "rest" && <span className="text-ink-2 text-xs">{d.minutes}′</span>
               )}
             </li>
           );

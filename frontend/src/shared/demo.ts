@@ -29,18 +29,25 @@ const STATE_KEY = "pathtopro.demo.state";
 
 async function load(): Promise<Snapshot> {
   if (state) return state;
-  loading ??= fetch(`${import.meta.env.BASE_URL}demo/snapshot.json`).then(async (r) => {
-    if (!r.ok) throw new ApiError(503, "Demo data could not be loaded");
-    const fresh = (await r.json()) as Snapshot;
-    let saved: Snapshot | null = null;
+  const savedState = (): Snapshot | null => {
     try {
-      saved = JSON.parse(localStorage.getItem(STATE_KEY) ?? "null");
+      return JSON.parse(localStorage.getItem(STATE_KEY) ?? "null");
     } catch {
-      saved = null;
+      return null;
     }
-    state = saved && saved.meta?.generated === fresh.meta.generated ? saved : fresh;
-    return state;
-  });
+  };
+  loading ??= fetch(`${import.meta.env.BASE_URL}demo/snapshot.json`)
+    .then((r) => (r.ok ? (r.json() as Promise<Snapshot>) : null))
+    .catch(() => null)
+    .then((fresh) => {
+      const saved = savedState();
+      // No network: carry on with what this browser already has, if anything
+      if (!fresh) return (state = saved ?? fail(503, "The demo data could not be loaded. Check your connection and try again."));
+      state = saved && saved.meta?.generated === fresh.meta.generated ? saved : fresh;
+      return state;
+    });
+  // A failed download is not kept: the next call tries again
+  loading.catch(() => (loading = null));
   return loading;
 }
 
@@ -71,6 +78,7 @@ export function resetDemo(): void {
   try {
     localStorage.removeItem(STATE_KEY);
     localStorage.removeItem("pathtopro.token");
+    localStorage.removeItem("pathtopro.user");
   } catch {
     /* ignore */
   }
@@ -194,6 +202,12 @@ function userByPlayerId(s: Snapshot, playerId: string) {
   return Object.values(s.users).find((u) => u.me.player_id === playerId);
 }
 
+/** The parent's weekly summary of this player, if that parent is one of the demo accounts. */
+function guardianSummary(s: Snapshot, playerId: string): Json | undefined {
+  const path = `/api/guardian/children/${playerId}/summary`;
+  return Object.values(s.users).find((u) => u.responses[path])?.responses[path];
+}
+
 function query(path: string): [string, URLSearchParams] {
   const [p, q = ""] = path.split("?");
   return [p, new URLSearchParams(q)];
@@ -289,6 +303,13 @@ async function route(path: string, method: string, body?: Json): Promise<Json> {
       syncTodayPathway(user);
       return { today, levelled_up: levelled };
     }
+    if (p === "/api/me/consent") {
+      const c = r[p] ?? fail(404, "Not available in the demo");
+      if (!c.self_managed) fail(403, "Until you are 16 a parent decides this in the family view");
+      const item = c.items.find((i: Json) => i.data_type === body.data_type);
+      if (item) item.granted = body.granted;
+      return c;
+    }
     if (p === "/api/me/position") fail(403, "Changing position needs the live server");
     if (p.startsWith("/api/me/devices") || p === "/api/me/health/import") fail(403, "Connecting a watch needs the live server");
     const career = r["/api/me/career"];
@@ -321,6 +342,8 @@ async function route(path: string, method: string, body?: Json): Promise<Json> {
       return career;
     }
     if (p === "/api/me/checkin") {
+      const own = r["/api/me/consent"];
+      if (own?.items.some((i: Json) => i.data_type === "wellness" && !i.granted)) fail(403, "Wellness check-ins need your consent (Account)");
       const prev = today.readiness?.band ?? null;
       const { score, band, components } = checkinReadiness(
         body,
@@ -349,6 +372,7 @@ async function route(path: string, method: string, body?: Json): Promise<Json> {
           notified_after_s: 0.01,
           readiness: today.readiness,
         });
+        today.on_hold = { kind, contact: s.users["physio@demo.pathtopro"]?.me.name ?? null };
       }
       return { escalated, notified: escalated ? "staff" : null, today };
     }
@@ -381,6 +405,14 @@ async function route(path: string, method: string, body?: Json): Promise<Json> {
       if (p === "/api/coach/squad-week") {
         const off = Math.max(0, Math.min(1, Number(q.get("offset") ?? 0)));
         return st[`${p}?offset=${off}`] ?? fail(404, "Not available in the demo");
+      }
+      if (p === "/api/coach/attention") {
+        const inbox: Json[] = st["/api/coach/inbox"] ?? [];
+        return {
+          approvals: inbox.length,
+          plan_changes: inbox.filter((x) => x.proposed?.length).length,
+          escalations: (st["/api/physio/queue"] ?? []).length,
+        };
       }
       if (p === "/api/coach/heatmap") {
         const hm = st[p];
@@ -468,6 +500,18 @@ async function route(path: string, method: string, body?: Json): Promise<Json> {
       st["/api/coach/inbox"] = inbox.filter((x) => x.id !== prop.id);
       const status = body.action === "reject" ? "rejected" : body.action === "edit" ? "edited" : "approved";
       const target = userByPlayerId(s, prop.player.id);
+      const stillWaiting = st["/api/coach/inbox"].some((x: Json) => x.player.id === prop.player.id && x.proposed?.length);
+      if (prop.proposed?.length && !stillWaiting) {
+        if (target) target.responses["/api/me/today"].pending_change = null;
+        const family = guardianSummary(s, prop.player.id);
+        if (family?.week_note?.state === "pending") {
+          const why = String(family.week_note.text).split(" to approve. ")[1] ?? "";
+          family.week_note =
+            status === "rejected"
+              ? { state: "watch", text: `The plan is unchanged this week. ${why} The coach can see this too.`.replace("  ", " ") }
+              : { state: "changed", text: `This week's plan was adjusted. ${why} ${user.me.name} approved it.`.replace("  ", " ") };
+        }
+      }
       if (status !== "rejected" && target) {
         const today = target.responses["/api/me/today"];
         today.why.unshift({
@@ -515,7 +559,11 @@ async function route(path: string, method: string, body?: Json): Promise<Json> {
     }
     const ack = p.match(/^\/api\/physio\/escalations\/([^/]+)\/ack$/);
     if (ack) {
+      const done = st["/api/physio/queue"].find((e: Json) => e.id === ack[1]);
+      const reporter = done && userByPlayerId(s, done.player.id);
       st["/api/physio/queue"] = st["/api/physio/queue"].filter((e: Json) => e.id !== ack[1]);
+      const open = st["/api/physio/queue"].some((e: Json) => e.player.id === done?.player.id);
+      if (reporter && !open) reporter.responses["/api/me/today"].on_hold = null;
       return { id: ack[1], acknowledged_at: new Date().toISOString() };
     }
     fail(404, "Not available in the demo");
@@ -528,6 +576,7 @@ async function route(path: string, method: string, body?: Json): Promise<Json> {
     const consent = p.match(/^\/api\/guardian\/children\/([^/]+)\/consent$/);
     if (consent && method === "PUT") {
       const c = r[p];
+      if (c.self_managed) fail(403, "Your child is old enough to decide this in their own account");
       const item = c.items.find((i: Json) => i.data_type === body.data_type);
       if (item) item.granted = body.granted;
       return c;

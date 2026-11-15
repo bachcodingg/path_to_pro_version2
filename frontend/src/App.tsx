@@ -8,7 +8,7 @@ import { ForgotPassword, SetPassword, VerifyEmail } from "./shared/AuthPages";
 import { Imprint, Privacy, Terms } from "./legal/Legal";
 import { leaguesUrl } from "./shared/apps";
 import type { Role } from "./shared/types";
-import { Spinner } from "./shared/ui";
+import { ErrorNote, Spinner } from "./shared/ui";
 
 const Account = lazy(() => import("./shared/Account").then((m) => ({ default: m.Account })));
 const AdminHome = lazy(() => import("./admin/AdminHome").then((m) => ({ default: m.AdminHome })));
@@ -58,8 +58,14 @@ function ToLeagues({ path }: { path?: string }) {
 }
 
 function Guard({ roles, children }: { roles: Role[]; children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, failed, retry } = useAuth();
   if (loading) return <Spinner />;
+  if (failed)
+    return (
+      <div className="mx-auto max-w-md p-4 pt-10">
+        <ErrorNote message="We couldn't load your data. Check your connection: you are still signed in." onRetry={retry} />
+      </div>
+    );
   if (!user) return <Navigate to="/login" replace />;
   if (!roles.includes(user.role) && user.role !== "admin") return <Navigate to={homeFor(user.role)} replace />;
   return <>{children}</>;

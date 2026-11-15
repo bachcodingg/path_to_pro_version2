@@ -2,7 +2,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
 
+from api import clock
 from api.db import SessionLocal, init_db
+from api.deps import age_on
 from api.main import app
 from api.services.seed import seed
 from domain.models import AuditLog, Player, SessionLoad
@@ -158,7 +160,10 @@ def test_heatmap_lineup_profile_log(demo):
 
 def test_guardian_scope_consent_export_delete(demo):
     client, _ = demo
-    g = login(client, "guardian02@demo.pathtopro")
+    with SessionLocal() as db:  # a parent decides about consent while the child is under 16
+        today = clock.today()
+        child = next(p for p in db.scalars(select(Player).order_by(Player.email)) if p.guardians and age_on(p.birth_date, today) < 16)
+        g = login(client, child.guardians[0].email)
     kids = client.get("/api/guardian/children", headers=g).json()
     assert len(kids) == 1
     kid = kids[0]["id"]

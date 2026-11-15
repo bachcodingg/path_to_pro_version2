@@ -15,7 +15,9 @@ not left to the LLM. Each claim below names the mechanism and the evidence.
 | Late maturers aren't judged against early maturers | Bio-banded percentiles on the player card and for goals | `analytics/norms.py` |
 | No "will you make it pro" prediction, no weight-loss features | Not built; prompts forbid predictions | Code review |
 | Works when the LLM is down | Rule-based constraints and explanations | Scenario suite "LLM API down" (5 cases) |
-| Data rights | Consent per data type (guardian below 16), export, delete | API tests for consent, export, delete |
+| Data rights | Consent per data type: a guardian decides below 16; from 16 the player does, with a record per data type written at sign-up or when a club invitation is accepted, and withdraws it under Account. A parent can no longer change it then. Export, delete | `tests/test_consent_and_pending.py`; API tests for export and delete |
+| A hard session never stands uncommented next to a warning | While a plan change waits for the coach, the player's Today names who decides and what today would become; after a pain report or red mood the session is "on hold" until the named adult has answered. The plan itself is still only changed by a person | `tests/test_consent_and_pending.py`; E2E: red check-in, tired player |
+| Parents read the week, not the health record | Under 16 the family view opens with the week in plain words (normal, lighter, waiting for the coach) from planning reasons only; pain and mood reports never appear in it | `test_under_16_the_parent_decides_and_gets_the_week_in_plain_words` |
 | Security | Field-level encryption, RBAC + scope checks, audit log on every health read | API tests (RBAC, audit); `test_health_fields_are_encrypted_at_rest` |
 | Transparency | Every change has a "Why?" card (data chips + approver) and an audit-log entry | E2E test: tired player sees the card with the coach's name |
 | Readiness colours don't flicker, and warnings are never delayed | Safety-first colour buffer: a better colour needs the score 8 points past the boundary, a worse colour applies at once | Day-to-day colour changes 58% -> 44% of days; `tests/test_calibration.py` |
@@ -40,6 +42,16 @@ not left to the LLM. Each claim below names the mechanism and the evidence.
 - **Test norms** in `backend/config/norms.yaml` are placeholders and must be replaced
   with published academy norms before real use.
 - The **Mirwald** maturity offset has a standard error of about 0.5 years.
+- **Consent at sign-up is one step**, not five: accepting the terms and privacy notice writes
+  the five consent records for a player of 16 or older, who can then switch each off. A
+  deployment for real players should ask per data type at sign-up. Players of 16 and 17 are
+  treated as able to consent to health data themselves; whether that holds is a question of
+  national law and has not been reviewed.
+- **Who reads a pain or mood report.** The named adult is the team's physio, and the coach
+  when there is none; today a coach of the squad can also open the physio queue. A club with a
+  physio should restrict it to medical staff: the coach picks the team.
+- **No retention schedule.** Data is kept until someone exports or deletes it; nothing
+  expires on its own yet.
 - All demo data is **synthetic**; no real player data is stored.
 - The **sensitivity** failures are concentrated on borderline days: 91% of the bands that
   flip under a +/-0.1 weight shift were within 5 points of a colour boundary (the

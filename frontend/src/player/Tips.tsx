@@ -116,7 +116,7 @@ export function TipBody({ t, hideTitle = false }: { t: Tip; hideTitle?: boolean 
       <ol className="space-y-1.5">
         {t.steps.map((s, i) => (
           <li key={s} className="flex gap-2">
-            <span className="bg-pitch-600 font-display flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white">
+            <span className="bg-pitch-300 font-display flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold text-pitch-950">
               {i + 1}
             </span>
             <span>{s}</span>

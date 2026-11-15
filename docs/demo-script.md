@@ -1,4 +1,23 @@
-# Demo script (7 minutes)
+# Demo script
+
+## The 60-second version (one phone, or one narrow window)
+
+One loop, three sign-ins, no slides. Press "Reset demo" first.
+
+1. **Leon** (`p15@demo.pathtopro`). Today says in one sentence that he has trained a lot and
+   slept little. His session is still Strength at effort 8, and under it: "A lighter plan is
+   waiting for Alex Weber." Say: *the system noticed overnight, but it does not decide alone.*
+2. **Coach** (`coach@demo.pathtopro`). The first thing on the page is **Needs you**: plan
+   changes to approve. Tap it. Leon is the first card: why in plain words, "42% less load",
+   the two days that change. Tap **Approve**.
+3. **Leon** again. Today's session is now Recovery at effort 3, and "Why did my plan change?"
+   names the coach who approved it. Say: *code computes, a fixed policy decides who approves,
+   the player always sees why.*
+
+If there are 20 seconds left: sign in as **Leon's parent** (`guardian15@demo.pathtopro`) and
+read the first card, "This week in short".
+
+## The full version (7 minutes)
 
 Setup: `docker compose up --build`, open http://localhost:8080. The seeder resets the
 synthetic season and sets "today" to Thursday of week 12. All passwords: `demo1234`.
@@ -9,10 +28,12 @@ synthetic season and sets "today" to Thursday of week 12. All passwords: `demo12
 2. **Prevention flow (2 min)**
    - Phone (or narrow window): sign in as **Leon U.** (`p15@demo.pathtopro`). Do the
      morning check-in: 4 cards + mood, under 30 seconds.
-   - Desktop: sign in as **Coach** (`coach@demo.pathtopro`). The Dressing room heatmap
-     shows Leon's red cells, a growth-zone ring and a load-spike triangle.
-   - Substitution board: Leon's card shows the current week vs the proposed week,
-     with chips "Sleep 5.5 h x 3", "Load +61%", "HRV -2.1 SD", "Growth zone". Press **A**.
+   - Desktop: sign in as **Coach** (`coach@demo.pathtopro`). Squad readiness opens with
+     "Needs you"; the heatmap shows Leon's red cells, a growth-zone ring and a load-spike triangle.
+   - Approvals: Leon's card is first. It gives the reason in plain words, the load change and
+     the days that change; "Full week and how this was decided" opens the current and proposed
+     week, the chips ("Sleep 5.5 h x 3", "Load +61%", "HRV -2.1 SD", "Growth zone") and the
+     policy rule. Select the card and press **A**.
    - Back on the phone: Today shows the updated session; the "Why?" card explains the
      change and says "Approved by Alex Weber".
 

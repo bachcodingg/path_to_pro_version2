@@ -31,7 +31,7 @@ const DEMO = [
   {
     group: "Family",
     bib: "family",
-    accounts: [{ label: "Guardian", note: "A parent's view", email: "guardian02@demo.pathtopro", number: 12 }],
+    accounts: [{ label: "Leon's parent", note: "The family view", email: "guardian15@demo.pathtopro", number: 12 }],
   },
 ];
 

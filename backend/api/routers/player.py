@@ -14,12 +14,13 @@ from analytics.maturation import maturity_offset
 from analytics.norms import NormTable
 from api import clock
 from api.db import get_db
-from api.deps import CurrentUser, age_on, audit, has_consent, require
+from api.deps import CurrentUser, age_on, audit, consent_view, decides_own_consent, has_consent, require
 from api.services import agent_runner, gym_view, skills_view, views
 from domain.enums import ConsentDataType, Position, ProposalStatus, Role, SessionType
 from domain.models import (
     AmateurProfile,
     Anthropometrics,
+    ConsentRecord,
     Drill,
     IDPGoal,
     Player,
@@ -179,7 +180,37 @@ def today_view(p: Player, user: CurrentUser, db: Session) -> dict:
         "tasks": [{"id": t, "label": TASKS[t], "done": t in done} for t in _tasks_for(shown.band if shown else None, flags)],
         "why": views.why_cards(db, p),
         "streak": views.streak(days, today),
+        "pending_change": views.pending_change(db, p, today),
+        "on_hold": views.on_hold(db, p),
     }
+
+
+# --------------------------------------------------------------------------- consent (players old enough to decide)
+
+
+@router.get("/consent")
+def my_consent(user: CurrentUser = Depends(require(Role.PLAYER)), db: Session = Depends(get_db)) -> dict:
+    return consent_view(db, _me(user, db), clock.today())
+
+
+class ConsentChange(BaseModel):
+    data_type: ConsentDataType
+    granted: bool
+
+
+@router.put("/consent")
+def set_my_consent(
+    body: ConsentChange, user: CurrentUser = Depends(require(Role.PLAYER)), db: Session = Depends(get_db)
+) -> dict:
+    """Give or withdraw consent for one kind of data. Under the age of digital consent a
+    parent decides instead (family view)."""
+    p, today = _me(user, db), clock.today()
+    if not decides_own_consent(p, today):
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Until you are 16 a parent decides this in the family view")
+    db.add(ConsentRecord(player_id=p.id, guardian_id=None, data_type=body.data_type, granted=body.granted))
+    audit(db, user, "consent", "consent_record", p.id, data_type=body.data_type.value, granted=body.granted, by="player")
+    db.commit()
+    return consent_view(db, p, today)
 
 
 @router.get("/today")

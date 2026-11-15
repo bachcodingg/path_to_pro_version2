@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from analytics.flags import Flag, FlagKind
+from analytics.flags import SHORT_SLEEP_HOURS, SHORT_SLEEP_NIGHTS, Flag, FlagKind
 from domain.enums import SessionType
 from planner.schema import (
     ConstraintSet,
@@ -29,6 +29,8 @@ KPI_SESSION: dict[str, SessionType] = {
     "yoyo_ir1": SessionType.TACTICAL,
     "technique": SessionType.TECHNICAL,  # self-guided pathway: ball-skill benchmarks
 }
+
+KPI_UNIT = {"sprint_10m": "s", "sprint_30m": "s", "cmj": "cm", "yoyo_ir1": "m"}
 
 KPI_LABEL = {
     "sprint_10m": "10 m sprint",
@@ -117,10 +119,42 @@ def default_explanation(flags: list[Flag], result: PlanResult, goals: list[DevGo
     matches = [d for d in result.days if d.kind == SessionType.MATCH]
     if any(b.day == a.day + 1 for a, b in zip(matches, matches[1:])):
         s3 = "You have two matches on back-to-back days, so your minutes are shared between them. " + s3
-    coach = f"{result.status}: {_join([f.detail for f in flags if not f.is_safety]) or 'no flags'}; load {result.weekly_load} AU"
+    return f"{s1} {s2} {s3}", coach_reason(flags, result)
+
+
+def _coach_words(f: Flag) -> str:
+    """One risk flag in a coach's words, with the number behind it in brackets."""
+    v = f.value
+    if f.kind == FlagKind.LOAD_SPIKE and v is not None:
+        return f"load {100 * (v - 1):.0f}% above the 4-week average (ACWR {v:.2f})"
+    if f.kind == FlagKind.SHORT_SLEEP:
+        return f"under {SHORT_SLEEP_HOURS:g} h sleep {SHORT_SLEEP_NIGHTS} nights running"
+    if f.kind == FlagKind.LOW_HRV and v is not None:
+        return f"heart-rate variability well below their normal ({v:+.1f} SD)"
+    if f.kind == FlagKind.PHV_WINDOW:
+        return "in the growth spurt"
+    if f.kind == FlagKind.READINESS_RED:
+        return "readiness in Recover"
+    if f.kind == FlagKind.HIGH_MONOTONY and v is not None:
+        return f"every day about equally hard (monotony {v:.1f})"
+    return f.detail
+
+
+def coach_reason(flags: list[Flag], result: PlanResult) -> str:
+    """Why the week changed, in one line a coach can read without a glossary.
+
+    The size of the change (load, sessions) is on the card next to it; the solver status is
+    stored with the plan. Only what the coach has to know about the plan itself is added here.
+    """
+    why = _join([_coach_words(f) for f in flags if not f.is_safety]) or "no risk flags"
+    coach = why[0].upper() + why[1:] + "."
     if result.weekly_load_cap:
-        coach += f" (cap {result.weekly_load_cap})"
-    return f"{s1} {s2} {s3}", coach[:300]
+        coach += f" Week capped at {result.weekly_load_cap} AU after the load spike."
+    if result.status == "relaxed":
+        coach += " Not every request fitted, so the lowest-priority ones were dropped."
+    elif result.status == "template":
+        coach += " No plan met every rule, so this is the safe template."
+    return coach[:300]
 
 
 def _join(parts: list[str]) -> str:

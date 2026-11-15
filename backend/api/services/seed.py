@@ -144,6 +144,11 @@ def seed(db: Session, n_players: int = 25, story: bool = True) -> dict:
                 db.add(
                     ConsentRecord(player_id=pl.id, guardian_id=g.id, data_type=dt, granted=True, recorded_at=_at(start, 9))
                 )
+        else:  # old enough to consent themselves: recorded as at sign-up
+            for dt in ConsentDataType:
+                db.add(
+                    ConsentRecord(player_id=pl.id, guardian_id=None, data_type=dt, granted=True, recorded_at=_at(start, 9))
+                )
 
     # Fixtures and the team's weekly template for the whole loaded period
     for f in res.fixtures:

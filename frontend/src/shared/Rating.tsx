@@ -4,10 +4,10 @@ import { cn } from "./ui";
 
 export const RATING_COLOUR: Record<RatingBand, string> = {
   elite: "bg-[#2a6fdb] text-white",
-  good: "bg-[#1fa05a] text-white",
+  good: "bg-[#157a43] text-white",
   fair: "bg-[#a3c639] text-[#13240a]",
   average: "bg-[#f0a020] text-[#2a1800]",
-  poor: "bg-[#e5484d] text-white",
+  poor: "bg-[#d13438] text-white",
 };
 
 export function ratingBand(v: number | null | undefined): RatingBand | null {
