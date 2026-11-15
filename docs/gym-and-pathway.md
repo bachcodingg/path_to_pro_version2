@@ -2,7 +2,7 @@
 
 ## Gym programmes (`backend/gym/`, `config/gym.yaml`)
 
-Every planned strength session turns into a concrete gym programme. It has two parts:
+
 
 | Block | Who | What |
 | --- | --- | --- |
