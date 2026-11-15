@@ -1,4 +1,4 @@
-# PathToPro evaluation (25 players x 40 weeks, seed 2026)
+# PathToPro evaluation ()
 
 | Metric | Target | Result | Status |
 | --- | --- | --- | --- |
