@@ -1,3 +1,19 @@
+"""Gym programme for one strength session, per player.
+
+Every session has the shared part every footballer does (warm-up, injury prevention,
+core, mobility) and a power, strength and position block chosen for the player's
+position. The same safety thinking as the planner applies:
+
+  - growth-spurt window (PHV): no jumps, no heavy loads, technique doses only
+  - before the growth spurt or under 14: technique doses, bodyweight and light loads
+  - heavy lifts only after the growth spurt and from 16, on a normal-or-better day
+  - red readiness: recovery gym only (isometric prevention, core, mobility)
+  - amber readiness: one set less, no jumps
+  - day before a match: short activation; two days before: no eccentric (sore) work
+  - the session's planned effort (RPE) caps the dose
+
+Deterministic: same inputs and date, same programme. Exercises rotate week to week.
+"""
 
 from __future__ import annotations
 
