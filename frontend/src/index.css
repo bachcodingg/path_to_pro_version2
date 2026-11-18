@@ -1,11 +1,6 @@
 @import "tailwindcss";
 
-/* Design system, "under the floodlights": the app is the overview page's pitch after dark. Each
-   kind of account has its own kit (ground colour) and bib (accent): players green and citron,
-   staff aubergine and lilac, family berry and pink. Readiness keeps its blue / amber / orange,
-   always with icons, and those colours mean nothing else.
-   Anybody (a variable-width face) for headings and numbers, Atkinson Hyperlegible Next for
-   reading, 16px minimum on mobile. */
+
 @theme {
   --font-sans: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-display: "Anybody", "Arial Narrow", ui-sans-serif, sans-serif;
