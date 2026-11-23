@@ -1,4 +1,6 @@
-
+# PLACEHOLDER norms for the synthetic demo. Replace with published academy norms
+# (cite source per test) before any real use. Groups: age groups U13-U19 and
+# bio-banded groups pre_phv / circa_phv / post_phv.
 tests:
   sprint_10m:
     unit: s
