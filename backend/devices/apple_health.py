@@ -1,6 +1,9 @@
 """Apple Health / Apple Watch data -> daily HRV, nights of sleep and workouts.
 
-
+Two inputs, one result (`HealthBatch`):
+  - the "Export All Health Data" file from the iPhone Health app (export.zip / export.xml),
+    parsed as a stream with defusedxml (no entity expansion, no external entities)
+  - a JSON payload from an iPhone Shortcut (or a future native app), see `HealthPayload`
 
 Apple Watch measures HRV as SDNN (ms), not RMSSD. We store ln(SDNN) as metric "sdnn" and
 the readiness score only compares it with the player's own SDNN baseline.
